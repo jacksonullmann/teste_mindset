@@ -1,27 +1,19 @@
-import chromium from 'chrome-aws-lambda';
+import chromium from '@sparticuz/chromium';
 import puppeteer from 'puppeteer-core';
 
 export default async function handler(req, res) {
   try {
-    const html = req.method === 'POST' && req.body && req.body.html
-      ? req.body.html
-      : '<html><body><h1>Resultado</h1><p>Sem HTML enviado.</p></body></html>';
-
-    const execPath = await chromium.executablePath;
+    const html = req.body && req.body.html ? req.body.html : '<html><body><h1>Resultado</h1></body></html>';
+    const executablePath = await chromium.executablePath();
     const browser = await puppeteer.launch({
       args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: execPath || '/usr/bin/chromium-browser',
+      executablePath,
       headless: chromium.headless
     });
 
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle0' });
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: { top: '10mm', bottom: '10mm' }
-    });
+    const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true, margin: { top: '10mm', bottom: '10mm' } });
 
     await browser.close();
 
