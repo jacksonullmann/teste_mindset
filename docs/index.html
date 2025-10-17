@@ -170,6 +170,32 @@ startBtn.addEventListener('click', function(){
 
         let label='', text='';
 
+
+      function updateUI(){
+        qnum.textContent = (current + 1);
+        qtext.textContent = questions[current];
+        progressBar.style.width = (((current + 1) / total) * 100) + '%';
+        slider.value = answers[current];
+        prevBtn.disabled = current === 0;
+        prevBtn.classList.toggle('disabled', current === 0);
+        nextBtn.textContent = current === total - 1 ? 'VER RESULTADO' : 'PRÓXIMO';
+      }
+
+      slider.addEventListener('input', function(){ answers[current] = parseInt(this.value,10); });
+
+      prevBtn.addEventListener('click', function(){ if(current===0) return; current--; updateUI(); slider.focus(); });
+      nextBtn.addEventListener('click', function(){
+        if(current < total - 1){ current++; updateUI(); slider.focus(); }
+        else { computeAndShowResult(); }
+      });
+
+      function computeAndShowResult(){
+        const sum = answers.reduce((a,b)=>a+b,0);
+        const maxSum = 4 * total;
+        const pct = sum / maxSum;
+
+        let label='', text='';
+
         if(pct <= 0.40){
           label = 'Mindset Fixo';
           text = `
