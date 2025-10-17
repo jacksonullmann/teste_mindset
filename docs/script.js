@@ -53,21 +53,37 @@
   // funções básicas
   function log(...args){ if(window && window.console) console.log('[teste_mindset]', ...args); }
 
-  function showCover(){
-    log('mostrar capa');
-    if(cover) cover.classList.remove('hidden'), cover.setAttribute('aria-hidden','false');
-    if(app) app.classList.add('hidden'), app.setAttribute('aria-hidden','true');
-    window.scrollTo(0,0);
+ function showCover(){
+  // classe + estilo para garantir
+  if(cover) {
+    cover.classList.remove('hidden');
+    cover.setAttribute('aria-hidden','false');
+    cover.style.display = ''; // restaura display padrão
   }
+  if(app) {
+    app.classList.add('hidden');
+    app.setAttribute('aria-hidden','true');
+    app.style.display = 'none';
+  }
+  window.scrollTo(0,0);
+}
 
   function startTest(){
-    log('iniciar teste');
-    if(cover) cover.classList.add('hidden'), cover.setAttribute('aria-hidden','true');
-    if(app) app.classList.remove('hidden'), app.setAttribute('aria-hidden','false');
-    resetTest();
-    if(slider) slider.focus();
-    window.scrollTo(0,0);
+  // aplica both class e inline style para garantir que suma
+  if(cover) {
+    cover.classList.add('hidden');
+    cover.setAttribute('aria-hidden','true');
+    cover.style.display = 'none';
   }
+  if(app) {
+    app.classList.remove('hidden');
+    app.setAttribute('aria-hidden','false');
+    app.style.display = ''; // remove override para permitir layout normal
+  }
+  resetTest();
+  if(slider) slider.focus();
+  window.scrollTo(0,0);
+}
 
   function updateUI(){
     if(qnum) qnum.textContent = (current + 1);
@@ -178,3 +194,4 @@
   window.__testeMindset = { startTest, showCover, updateUI, computeAndShowResult, resetTest };
   log('script inicializado. startBtn exists:', !!startBtn, 'cover exists:', !!cover, 'app exists:', !!app);
 })();
+
