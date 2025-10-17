@@ -196,7 +196,13 @@
   // handlers
   if (closeResult) closeResult.addEventListener('click', hideResult);
   if (retryTest) retryTest.addEventListener('click', function(){ hideResult(); resetTest(); startTest(); });
-  if (savePdf) savePdf.addEventListener('click', saveResultAsPdf);
+  if (savePdf) {
+  savePdf.removeEventListener && savePdf.removeEventListener('click', saveResultAsPdf);
+  savePdf.addEventListener('click', function(e){
+    e.preventDefault();
+    downloadResultPdf();
+  });
+}
 
   document.addEventListener('keydown', function(e){
     try {
@@ -313,5 +319,6 @@ function downloadResultPdf(){
   };
 // garantia: fecha qualquer IIFE ou bloco aberto no final do arquivo
 })();
+
 
 
