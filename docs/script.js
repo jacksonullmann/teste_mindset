@@ -313,3 +313,5 @@ function downloadResultPdf(){
   };
 // garantia: fecha qualquer IIFE ou bloco aberto no final do arquivo
 })();
+
+
