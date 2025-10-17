@@ -274,6 +274,7 @@ function downloadResultPdf(){
     if (isIOS) {
       // iOS: abrir em nova aba para que o usuário possa usar o Share / Salvar em Arquivos
       window.open(url, '_blank');
+      if (typeof window.__showIosSaveBanner === 'function') window.__showIosSaveBanner();
       // opcional: mostrar instrução breve
       try { alert('O PDF foi aberto em nova aba. Use o botão de partilha ou pressione longo sobre o documento para salvar em Arquivos.'); } catch(e){}
       // revoga depois de um tempo (não imediato para não invalidar a aba)
@@ -294,9 +295,26 @@ function downloadResultPdf(){
   });
 }
 
-
-  
+// mostra banner de instrução para iOS quando o PDF é aberto em nova aba
+(function(){
+  var isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent);
+  if(!isIOS) return;
+  var banner = document.createElement('div');
+  banner.className = 'ios-save-banner';
+  banner.id = 'iosSaveBanner';
+  banner.innerHTML = 'PDF aberto. Use o botão de partilha ou pressione longo para salvar em Arquivos.';
+  document.body.appendChild(banner);
+  // função para exibir por 8 segundos
+  window.__showIosSaveBanner = function(){
+    var b = document.getElementById('iosSaveBanner');
+    if(!b) return;
+    b.classList.add('visible');
+    setTimeout(function(){ b.classList.remove('visible'); }, 8000);
+  };
+  // chamar quando abrimos o PDF em nova aba (no fluxo de downloadResultPdf)
 })();
+
+
 
 
 
