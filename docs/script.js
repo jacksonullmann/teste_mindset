@@ -53,32 +53,40 @@
   // funções básicas
   function log(...args){ if(window && window.console) console.log('[teste_mindset]', ...args); }
 
- function showCover(){
-  // classe + estilo para garantir
-  if(cover) {
+function showCover(){
+  // garante que nada focado permaneça dentro do app antes de esconder
+  if(document.activeElement && cover && cover.contains(document.activeElement)){
+    document.activeElement.blur();
+  }
+  if(cover){
     cover.classList.remove('hidden');
+    cover.style.display = '';
     cover.setAttribute('aria-hidden','false');
-    cover.style.display = ''; // restaura display padrão
   }
-  if(app) {
+  if(app){
     app.classList.add('hidden');
-    app.setAttribute('aria-hidden','true');
     app.style.display = 'none';
+    app.setAttribute('aria-hidden','true');
   }
+  // foca no botão começar para navegação por teclado
+  if(startBtn) startBtn.focus();
   window.scrollTo(0,0);
 }
 
-  function startTest(){
-  // aplica both class e inline style para garantir que suma
-  if(cover) {
-    cover.classList.add('hidden');
-    cover.setAttribute('aria-hidden','true');
-    cover.style.display = 'none';
+function startTest(){
+  // se algo dentro do resultado tiver foco, limpa antes de esconder elementos
+  if(document.activeElement && resultPanel && resultPanel.contains(document.activeElement)){
+    document.activeElement.blur();
   }
-  if(app) {
+  if(cover){
+    cover.classList.add('hidden');
+    cover.style.display = 'none';
+    cover.setAttribute('aria-hidden','true');
+  }
+  if(app){
     app.classList.remove('hidden');
+    app.style.display = '';
     app.setAttribute('aria-hidden','false');
-    app.style.display = ''; // remove override para permitir layout normal
   }
   resetTest();
   if(slider) slider.focus();
@@ -102,13 +110,27 @@
     hideResult();
   }
 
-  function showResult(){
-    if(resultPanel) resultPanel.classList.add('visible'), resultPanel.setAttribute('aria-hidden','false');
+function showResult(){
+  if(resultPanel){
+    // antes de tornar visível, garantir que nada externo retenha foco indevido
+    resultPanel.setAttribute('aria-hidden','false');
+    resultPanel.classList.add('visible');
+    // foco no botão fechar do modal (se existir)
     if(closeResult) closeResult.focus();
   }
+}
+
   function hideResult(){
-    if(resultPanel) resultPanel.classList.remove('visible'), resultPanel.setAttribute('aria-hidden','true');
+  if(resultPanel){
+    // se o botão dentro do panel tem foco, movemos para o botão "PRÓXIMO" (ou startBtn) antes de esconder
+    if(document.activeElement && resultPanel.contains(document.activeElement)){
+      if(nextBtn) nextBtn.focus(); else if(startBtn) startBtn.focus();
+      document.activeElement.blur();
+    }
+    resultPanel.classList.remove('visible');
+    resultPanel.setAttribute('aria-hidden','true');
   }
+}
 
   function computeAndShowResult(){
     const sum = answers.reduce((a,b)=>a+b,0);
@@ -194,4 +216,5 @@
   window.__testeMindset = { startTest, showCover, updateUI, computeAndShowResult, resetTest };
   log('script inicializado. startBtn exists:', !!startBtn, 'cover exists:', !!cover, 'app exists:', !!app);
 })();
+
 
