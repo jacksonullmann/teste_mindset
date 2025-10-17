@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Teste de Mindset</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- html2pdf bundle (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js" integrity="sha512-MpDFIChbcXl2QgipQrt1VcPHMldRILetapBl5MPCA9Y8r7qvlwx1/Mc9hNTzY+kS5kX6PdoDq41ws1HiVNLdZA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="qcont" role="application" aria-labelledby="qHeading">
+      <h3 id="qHeading">Questão <span id="qnum">1</span> de 20</h3>
+
+      <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+      <p class="question" id="questionText">Aqui vai o texto da pergunta — exemplo para visualização.</p>
+
+      <div class="anscont">
+        <div class="labels-row">
+          <span class="label-left">Discordo</span>
+          <span class="label-right">Concordo</span>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-cont">
+            <input id="answerSlider" type="range" min="0" max="4" step="1" value="2" />
+            <div class="divisions" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="process">
+        <button id="prevBtn" class="qnav" aria-label="Pergunta anterior">ANTERIOR</button>
+        <div class="spacer"></div>
+        <button id="nextBtn" class="qnav primary" aria-label="Próxima pergunta">PRÓXIMO</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Painel de resultado -->
+  <div id="resultPanel" class="result-panel" aria-hidden="true">
+    <div class="result-card" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+      <h2 id="resultTitle"></h2>
+      <div id="resultText" class="result-text"></div>
+      <div class="result-meta" id="resultMeta"></div>
+
+      <div class="result-actions">
+        <button id="savePdf" class="qnav">Salvar em PDF</button>
+        <button id="retryTest" class="qnav">Refazer teste</button>
+        <button id="closeResult" class="qnav primary">FECHAR</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const questions = [
+        "Você pode aprender coisas novas, mas isso não mudará realmente o quão inteligente você é.",
+        "Experimentar coisas novas é estressante para mim.",
+        "Acredito que a inteligência é em grande parte inata e não pode ser muito mudada.",
+        "Na minha opinião, o talento é em grande parte algo com o qual você nasce.",
+        "Eu aprecio quando pais, treinadores e professores me dão feedback sobre meu desempenho, mesmo que esse feedback seja negativo.",
+        "É possível mudar coisas básicas sobre o tipo de pessoa que você é.",
+        "Muitas vezes fico ressentido ou com inveja quando ouço sobre o sucesso de outras pessoas.",
+        "Acredito que não importa que tipo de pessoa você seja, sempre é possível fazer grandes mudanças para melhor.",
+        "Pessoas verdadeiramente inteligentes não precisam se esforçar muito.",
+        "Acredito que quase todo mundo que é bom em alguma habilidade passou muito tempo praticando essa habilidade, independentemente de sua habilidade natural.",
+        "Não acho que as pessoas possam mudar quem realmente são em sua essência.",
+        "Você pode escolher fazer as coisas de maneira diferente, mas as partes realmente importantes de quem você é – seus talentos e habilidades – não podem ser alteradas.",
+        "Acredito que a matemática é muito mais fácil de aprender se você for homem.",
+        "Eu acredito que é possível aumentar substancialmente o quão inteligente você é.",
+        "Acredito que quanto maior for o esforço, melhor será o resultado.",
+        "Penso que habilidade musical é algo que qualquer um pode aprender.",
+        "Muitas vezes fico com raiva quando recebo feedback crítico sobre meu desempenho.",
+        "Estou sempre me desenvolvendo em uma área ou outra; Eu gosto de aprender coisas novas.",
+        "Acredito que a inteligência sempre pode ser melhorada.",
+        "Acredito que todos os seres humanos sem lesões cerebrais ou grandes defeitos congênitos são capazes da mesma quantidade de aprendizado."
+      ];
+
+      const total = questions.length;
+      let current = 0;
+      let answers = new Array(total).fill(2);
+
+      const qnum = document.getElementById('qnum');
+      const qtext = document.getElementById('questionText');
+      const progressBar = document.getElementById('progressBar');
+      const slider = document.getElementById('answerSlider');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+
+      const resultPanel = document.getElementById('resultPanel');
+      const resultTitle = document.getElementById('resultTitle');
+      const resultText = document.getElementById('resultText');
+      const resultMeta = document.getElementById('resultMeta');
+      const closeResult = document.getElementById('closeResult');
+      const savePdf = document.getElementById('savePdf');
+      const retryTest = document.getElementById('retryTest');
+
+      function updateUI(){
+        qnum.textContent = (current + 1);
+        qtext.textContent = questions[current];
+        progressBar.style.width = (((current + 1) / total) * 100) + '%';
+        slider.value = answers[current];
+        prevBtn.disabled = current === 0;
+        prevBtn.classList.toggle('disabled', current === 0);
+        nextBtn.textContent = current === total - 1 ? 'VER RESULTADO' : 'PRÓXIMO';
+      }
+
+      slider.addEventListener('input', function(){ answers[current] = parseInt(this.value,10); });
+
+      prevBtn.addEventListener('click', function(){ if(current===0) return; current--; updateUI(); slider.focus(); });
+      nextBtn.addEventListener('click', function(){
+        if(current < total - 1){ current++; updateUI(); slider.focus(); }
+        else { computeAndShowResult(); }
+      });
+
+      function computeAndShowResult(){
+        const sum = answers.reduce((a,b)=>a+b,0);
+        const maxSum = 4 * total;
+        const pct = sum / maxSum;
+
+        let label='', text='';
+
+        if(pct <= 0.40){
+          label = 'Mindset Fixo';
+          text = `
+            <p><strong>Mindset Fixo</strong></p>
+            <p>Suas respostas indicam uma preferência por um Mindset Fixo. Você tende a acreditar que inteligência e talento são traços estáticos e que esforço nem sempre altera resultados significativos. Isso pode fazer com que você evite desafios, desista mais rápido diante de dificuldades e veja esforço como algo menos valioso.</p>
+            <p><em>Resumo:</em> foco na validação, aversão ao erro e busca por resultados imediatos. Sugestão: praticar a mentalidade de processo e encarar erros como aprendizado.</p>
+          `;
+        } else if(pct >= 0.60){
+          label = 'Mindset de Crescimento';
+          text = `
+            <p><strong>Mindset de Crescimento</strong></p>
+            <p>Suas respostas indicam uma preferência por um Mindset de Crescimento. Você tende a acreditar que habilidades podem ser desenvolvidas com esforço, estratégia e aprendizagem contínua. Isso favorece persistência, busca por desafios e valorização do processo de aprendizagem.</p>
+            <p><em>Resumo:</em> valoriza esforço e prática deliberada, aceita feedback e persiste diante de dificuldades. Sugestão: definir metas de aprendizagem e celebrar progresso.</p>
+          `;
+        } else {
+          label = 'Mindset Indiferenciado';
+          text = `
+            <p><strong>Mindset Indiferenciado</strong></p>
+            <p>Suas respostas sugerem que você tem um Mindset indiferenciado (ou misto). Isso significa que suas crenças oscilam entre acreditar que pessoas podem melhorar por meio do esforço e acreditar que talento é inato. Em algumas situações você reage com mentalidade de crescimento, em outras com mentalidade fixa.</p>
+            <p><em>Resumo:</em> flexível, porém inconsistente; vale trabalhar a consciência situacional e estratégias para ativar o mindset de crescimento quando necessário.</p>
+          `;
+        }
+
+        resultTitle.textContent = label;
+        resultText.innerHTML = text;
+        resultMeta.innerHTML = `<p><strong>Pontuação:</strong> ${sum} de ${maxSum} (${Math.round(pct*100)}%)</p><p><small>Interpretação adaptada a partir de conceitos do livro de Carol S. Dweck.</small></p>`;
+        showResult();
+      }
+
+      function showResult(){
+        resultPanel.setAttribute('aria-hidden','false');
+        resultPanel.classList.add('visible');
+        closeResult.focus();
+      }
+
+      function hideResult(){
+        resultPanel.classList.remove('visible');
+        resultPanel.setAttribute('aria-hidden','true');
+      }
+
+      function resetTest(){
+        answers = new Array(total).fill(2);
+        current = 0;
+        updateUI();
+        hideResult();
+        slider.focus();
+      }
+
+      function saveResultAsPdf(){
+        // Seleciona o elemento que contém o resultado (formato já amigável)
+        const element = document.querySelector('.result-card');
+
+        // Opções html2pdf recomendadas para resultado: A4, margem pequena, boa qualidade de imagem
+        const opt = {
+          margin:       10,
+          filename:     `resultado-mindset-${new Date().toISOString().slice(0,10)}.pdf`,
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 2, useCORS: true, logging: false },
+          jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' }
+        };
+
+        // Gera e salva o PDF no cliente
+        html2pdf().set(opt).from(element).save();
+      }
+
+      // handlers
+      closeResult.addEventListener('click', hideResult);
+      retryTest.addEventListener('click', resetTest);
+      savePdf.addEventListener('click', saveResultAsPdf);
+
+      document.addEventListener('keydown', function(e){
+        if(e.key==='Escape' && resultPanel.classList.contains('visible')) hideResult();
+        if(e.key==='ArrowRight') nextBtn.click();
+        if(e.key==='ArrowLeft') prevBtn.click();
+      });
+
+      // inicializa
+      updateUI();
+    })();
+  </script>
+</body>
+</html>
