@@ -155,25 +155,39 @@ function showResult(){
 }
 
   function computeAndShowResult(){
-    const sum = answers.reduce((a,b)=>a+b,0);
-    const maxSum = 4 * total;
-    const pct = sum / maxSum;
-    let label = '', text = '';
-    if(pct <= 0.40){
-      label = 'Mindset Fixo';
-      text = '<p><strong>Mindset Fixo</strong></p><p>Suas respostas indicam preferência por Mindset Fixo...</p>';
-    } else if(pct >= 0.60){
-      label = 'Mindset de Crescimento';
-      text = '<p><strong>Mindset de Crescimento</strong></p><p>Suas respostas indicam preferência por Mindset de Crescimento...</p>';
-    } else {
-      label = 'Mindset Indiferenciado';
-      text = '<p><strong>Mindset Indiferenciado</strong></p><p>Suas respostas indicam mistura de crenças...</p>';
-    }
-    if(resultTitle) resultTitle.textContent = label;
-    if(resultText) resultText.innerHTML = text;
-    if(resultMeta) resultMeta.innerHTML = `<p><strong>Pontuação:</strong> ${sum} de ${maxSum} (${Math.round(pct*100)}%)</p>`;
-    showResult();
+  const sum = answers.reduce((a,b)=>a+b,0);
+  const maxSum = 4 * total;
+  const pct = sum / maxSum;
+
+  let label = '';
+  let text = '';
+
+  if(pct <= 0.40){
+    label = 'Mindset Fixo';
+    text = ''
+      + '<p><strong>Mindset Fixo</strong></p>'
+      + '<p>Suas respostas indicam uma preferência por um Mindset Fixo. Você tende a acreditar que inteligência e talento são traços estáticos e que esforço nem sempre altera resultados significativos. Isso pode fazer com que você evite desafios, desista mais rápido diante de dificuldades e veja esforço como algo menos valioso.</p>'
+      + '<p><em>Resumo:</em> foco na validação, aversão ao erro e busca por resultados imediatos. Sugestão: praticar a mentalidade de processo e encarar erros como aprendizado.</p>';
+  } else if(pct >= 0.60){
+    label = 'Mindset de Crescimento';
+    text = ''
+      + '<p><strong>Mindset de Crescimento</strong></p>'
+      + '<p>Suas respostas indicam uma preferência por um Mindset de Crescimento. Você tende a acreditar que habilidades podem ser desenvolvidas com esforço, estratégia e aprendizagem contínua. Isso favorece persistência, busca por desafios e valorização do processo de aprendizagem.</p>'
+      + '<p><em>Resumo:</em> valoriza esforço e prática deliberada, aceita feedback e persiste diante de dificuldades. Sugestão: definir metas de aprendizagem e celebrar progresso.</p>';
+  } else {
+    label = 'Mindset Indiferenciado';
+    text = ''
+      + '<p><strong>Mindset Indiferenciado</strong></p>'
+      + '<p>Suas respostas sugerem um Mindset indiferenciado (ou misto). Isso significa que suas crenças oscilam entre acreditar que pessoas podem melhorar por meio do esforço e acreditar que talento é inato. Em algumas situações você reage com mentalidade de crescimento, em outras com mentalidade fixa.</p>'
+      + '<p><em>Resumo:</em> flexível, porém inconsistente; vale trabalhar a consciência situacional e estratégias para ativar o mindset de crescimento quando necessário.</p>';
   }
+
+  if (resultTitle) resultTitle.textContent = label;
+  if (resultText) resultText.innerHTML = text;
+  if (resultMeta) resultMeta.innerHTML = `<p><strong>Pontuação:</strong> ${sum} de ${maxSum} (${Math.round(pct*100)}%)</p><p><small>Interpretação adaptada a partir de conceitos do livro de Carol S. Dweck.</small></p>`;
+
+  showResult();
+}
 
   // listeners defensivos: se elemento existir, usa listener direto; caso contrário, usa delegação no document
   if(startBtn){
@@ -238,6 +252,7 @@ function showResult(){
   window.__testeMindset = { startTest, showCover, updateUI, computeAndShowResult, resetTest };
   log('script inicializado. startBtn exists:', !!startBtn, 'cover exists:', !!cover, 'app exists:', !!app);
 })();
+
 
 
 
