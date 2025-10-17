@@ -193,16 +193,38 @@
     }
   }
 
-  // handlers
-  if (closeResult) closeResult.addEventListener('click', hideResult);
-  if (retryTest) retryTest.addEventListener('click', function(){ hideResult(); resetTest(); startTest(); });
-  if (savePdf) {
+// handler que envia o HTML da .result-card para o endpoint serverless e baixa o PDF
+if (savePdf) {
   savePdf.removeEventListener && savePdf.removeEventListener('click', saveResultAsPdf);
   savePdf.addEventListener('click', function(e){
     e.preventDefault();
-    downloadResultPdf();
+    var element = document.querySelector('.result-card');
+    if (!element) { alert('Resultado não encontrado para gerar PDF.'); return; }
+    var html = element.outerHTML;
+    fetch('/api/generate-pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ html: html })
+    }).then(function(resp){
+      if (!resp.ok) throw new Error('PDF failed');
+      return resp.blob();
+    }).then(function(blob){
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'resultado-mindset-' + (new Date().toISOString().slice(0,10)) + '.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 10000);
+    }).catch(function(){
+      alert('Erro ao gerar PDF no servidor. Usando fallback local.');
+      // fallback local: tenta o método já implementado
+      try { downloadResultPdf(); } catch(e){ window.print(); }
+    });
   });
 }
+
 
   document.addEventListener('keydown', function(e){
     try {
@@ -312,6 +334,7 @@ function downloadResultPdf(){
 
 // fim do arquivo - garante fechamento correto
 })();
+
 
 
 
