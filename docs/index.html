@@ -6,29 +6,30 @@
   <title>Teste de Mindset</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js" integrity="sha512-MpDFIChbcXl2QgipQrt1VcPHMldRILetapBl5MPCA9Y8r7qvlwx1/Mc9hNTzY+kS5kX6PdoDq41ws1HiVNLdZA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="script.js" defer></script>
 </head>
 <body>
   <!-- CAPA / INTRO -->
-  <main id="cover" class="cover">
-    <div class="cover-card">
-      <h1 class="cover-title">Teste de Mindset</h1>
-      <p class="cover-sub">Descubra como suas crenças sobre inteligência e talento influenciam sua abordagem diante de desafios, esforço e aprendizado.</p>
-      <p class="cover-desc">Este questionário de 20 itens foi adaptado com base nas pesquisas sobre Mindset de Carol S. Dweck. Para cada afirmação, mova a barra entre "Discordo" e "Concordo". Não existem respostas certas — responda com sincero segundo o que costuma sentir.</p>
+  <main id="cover" class="cover" aria-hidden="false">
+    <div class="cover-card" role="region" aria-labelledby="coverTitle">
+      <h1 id="coverTitle" class="cover-title">Teste de Mindset</h1>
+      <p class="cover-sub">Descubra como suas crenças sobre inteligência e talento influenciam sua abordagem diante de desafios e aprendizado.</p>
+      <p class="cover-desc">Responda com sinceridade. Não há respostas certas — apenas reflexões sobre sua maneira de encarar esforço, talento e feedback.</p>
       <div class="cover-actions">
-        <button id="startBtn" class="qnav primary">Começar</button>
-        <button id="learnMore" class="qnav">Saiba mais</button>
+        <button id="startBtn" class="qnav primary" aria-label="Começar teste">Começar</button>
+        <button id="learnMore" class="qnav" aria-label="Saber mais">Saiba mais</button>
       </div>
     </div>
   </main>
 
   <!-- CONTEÚDO DO TESTE -->
-  <div id="app" class="container hidden">
+  <div id="app" class="container hidden" aria-hidden="true">
     <div class="qcont" role="application" aria-labelledby="qHeading">
       <h3 id="qHeading">Questão <span id="qnum">1</span> de 20</h3>
 
       <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
 
-      <p class="question" id="questionText">Aqui vai o texto da pergunta — exemplo para visualização.</p>
+      <p class="question" id="questionText">Carregando pergunta...</p>
 
       <div class="anscont">
         <div class="labels-row">
@@ -38,7 +39,7 @@
 
         <div class="slider-row">
           <div class="slider-cont">
-            <input id="answerSlider" type="range" min="0" max="4" step="1" value="2" />
+            <input id="answerSlider" type="range" min="0" max="4" step="1" value="2" aria-label="Resposta" />
             <div class="divisions" aria-hidden="true">
               <span></span><span></span><span></span><span></span><span></span>
             </div>
@@ -49,7 +50,7 @@
       <div class="process">
         <button id="prevBtn" class="qnav" aria-label="Pergunta anterior">ANTERIOR</button>
         <div class="spacer"></div>
-        <button id="backToCover" class="qnav">Voltar</button>
+        <button id="backToCover" class="qnav" aria-label="Voltar à capa">Voltar</button>
         <button id="nextBtn" class="qnav primary" aria-label="Próxima pergunta">PRÓXIMO</button>
       </div>
     </div>
@@ -69,188 +70,5 @@
       </div>
     </div>
   </div>
-
-  <script>
-    (function(){
-      const questions = [
-        "Você pode aprender coisas novas, mas isso não mudará realmente o quão inteligente você é.",
-        "Experimentar coisas novas é estressante para mim.",
-        "Acredito que a inteligência é em grande parte inata e não pode ser muito mudada.",
-        "Na minha opinião, o talento é em grande parte algo com o qual você nasce.",
-        "Eu aprecio quando pais, treinadores e professores me dão feedback sobre meu desempenho, mesmo que esse feedback seja negativo.",
-        "É possível mudar coisas básicas sobre o tipo de pessoa que você é.",
-        "Muitas vezes fico ressentido ou com inveja quando ouço sobre o sucesso de outras pessoas.",
-        "Acredito que não importa que tipo de pessoa você seja, sempre é possível fazer grandes mudanças para melhor.",
-        "Pessoas verdadeiramente inteligentes não precisam se esforçar muito.",
-        "Acredito que quase todo mundo que é bom em alguma habilidade passou muito tempo praticando essa habilidade, independentemente de sua habilidade natural.",
-        "Não acho que as pessoas possam mudar quem realmente são em sua essência.",
-        "Você pode escolher fazer as coisas de maneira diferente, mas as partes realmente importantes de quem você é – seus talentos e habilidades – não podem ser alteradas.",
-        "Acredito que a matemática é muito mais fácil de aprender se você for homem.",
-        "Eu acredito que é possível aumentar substancialmente o quão inteligente você é.",
-        "Acredito que quanto maior for o esforço, melhor será o resultado.",
-        "Penso que habilidade musical é algo que qualquer um pode aprender.",
-        "Muitas vezes fico com raiva quando recebo feedback crítico sobre meu desempenho.",
-        "Estou sempre me desenvolvendo em uma área ou outra; Eu gosto de aprender coisas novas.",
-        "Acredito que a inteligência sempre pode ser melhorada.",
-        "Acredito que todos os seres humanos sem lesões cerebrais ou grandes defeitos congênitos são capazes da mesma quantidade de aprendizado."
-      ];
-
-      const total = questions.length;
-      let current = 0;
-      let answers = new Array(total).fill(2);
-
-      // elementos
-      const cover = document.getElementById('cover');
-      const startBtn = document.getElementById('startBtn');
-      const learnMore = document.getElementById('learnMore');
-      const app = document.getElementById('app');
-      const backToCover = document.getElementById('backToCover');
-
-      const qnum = document.getElementById('qnum');
-      const qtext = document.getElementById('questionText');
-      const progressBar = document.getElementById('progressBar');
-      const slider = document.getElementById('answerSlider');
-      const prevBtn = document.getElementById('prevBtn');
-      const nextBtn = document.getElementById('nextBtn');
-
-      const resultPanel = document.getElementById('resultPanel');
-      const resultTitle = document.getElementById('resultTitle');
-      const resultText = document.getElementById('resultText');
-      const resultMeta = document.getElementById('resultMeta');
-      const closeResult = document.getElementById('closeResult');
-      const savePdf = document.getElementById('savePdf');
-      const retryTest = document.getElementById('retryTest');
-
-      function showCover(){ cover.classList.remove('hidden'); app.classList.add('hidden'); }
-     function startTest(){
-  // garante que o cover suma completamente
-  cover.classList.add('hidden');
-  cover.setAttribute('aria-hidden','true');
-
-  // mostra o app e garante foco no controle
-  app.classList.remove('hidden');
-  app.removeAttribute('aria-hidden');
-  slider.focus();
-
-  // rola para o topo do conteúdo do teste (evita que o topo da capa continue visível)
-  try { window.scrollTo({ top: 0, behavior: 'instant' }); } catch(e) { window.scrollTo(0,0); }
-}
-
-// Listener do botão Começar (substituir o existente)
-startBtn.removeEventListener?.('click', startTest); // tentativa segura de remover listener antigo
-startBtn.addEventListener('click', function(){
-  // reset do teste e iniciar
-  resetTest();
-  startTest();
-});
-
-
-      function updateUI(){
-        qnum.textContent = (current + 1);
-        qtext.textContent = questions[current];
-        progressBar.style.width = (((current + 1) / total) * 100) + '%';
-        slider.value = answers[current];
-        prevBtn.disabled = current === 0;
-        prevBtn.classList.toggle('disabled', current === 0);
-        nextBtn.textContent = current === total - 1 ? 'VER RESULTADO' : 'PRÓXIMO';
-      }
-
-      slider.addEventListener('input', function(){ answers[current] = parseInt(this.value,10); });
-
-      prevBtn.addEventListener('click', function(){ if(current===0) return; current--; updateUI(); slider.focus(); });
-      nextBtn.addEventListener('click', function(){
-        if(current < total - 1){ current++; updateUI(); slider.focus(); }
-        else { computeAndShowResult(); }
-      });
-
-      function computeAndShowResult(){
-        const sum = answers.reduce((a,b)=>a+b,0);
-        const maxSum = 4 * total;
-        const pct = sum / maxSum;
-
-        let label='', text='';
-
-
-      function updateUI(){
-        qnum.textContent = (current + 1);
-        qtext.textContent = questions[current];
-        progressBar.style.width = (((current + 1) / total) * 100) + '%';
-        slider.value = answers[current];
-        prevBtn.disabled = current === 0;
-        prevBtn.classList.toggle('disabled', current === 0);
-        nextBtn.textContent = current === total - 1 ? 'VER RESULTADO' : 'PRÓXIMO';
-      }
-
-      slider.addEventListener('input', function(){ answers[current] = parseInt(this.value,10); });
-
-      prevBtn.addEventListener('click', function(){ if(current===0) return; current--; updateUI(); slider.focus(); });
-      nextBtn.addEventListener('click', function(){
-        if(current < total - 1){ current++; updateUI(); slider.focus(); }
-        else { computeAndShowResult(); }
-      });
-
-      function computeAndShowResult(){
-        const sum = answers.reduce((a,b)=>a+b,0);
-        const maxSum = 4 * total;
-        const pct = sum / maxSum;
-
-        let label='', text='';
-
-        if(pct <= 0.40){
-          label = 'Mindset Fixo';
-          text = `
-            <p><strong>Mindset Fixo</strong></p>
-            <p>Suas respostas indicam uma preferência por um Mindset Fixo. Você tende a acreditar que inteligência e talento são traços estáticos e que esforço nem sempre altera resultados significativos. Isso pode fazer com que você evite desafios, desista mais rápido diante de dificuldades e veja esforço como algo menos valioso.</p>
-            <p><em>Resumo:</em> foco na validação, aversão ao erro e busca por resultados imediatos. Sugestão: praticar a mentalidade de processo e encarar erros como aprendizado.</p>
-          `;
-        } else if(pct >= 0.60){
-          label = 'Mindset de Crescimento';
-          text = `
-            <p><strong>Mindset de Crescimento</strong></p>
-            <p>Suas respostas indicam uma preferência por um Mindset de Crescimento. Você tende a acreditar que habilidades podem ser desenvolvidas com esforço, estratégia e aprendizagem contínua. Isso favorece persistência, busca por desafios e valorização do processo de aprendizagem.</p>
-            <p><em>Resumo:</em> valoriza esforço e prática deliberada, aceita feedback e persiste diante de dificuldades. Sugestão: definir metas de aprendizagem e celebrar progresso.</p>
-          `;
-        } else {
-          label = 'Mindset Indiferenciado';
-          text = `
-            <p><strong>Mindset Indiferenciado</strong></p>
-            <p>Suas respostas sugerem que você tem um Mindset indiferenciado (ou misto). Isso significa que suas crenças oscilam entre acreditar que pessoas podem melhorar por meio do esforço e acreditar que talento é inato. Em algumas situações você reage com mentalidade de crescimento, em outras com mentalidade fixa.</p>
-            <p><em>Resumo:</em> flexível, porém inconsistente; vale trabalhar a consciência situacional e estratégias para ativar o mindset de crescimento quando necessário.</p>
-          `;
-        }
-
-        resultTitle.textContent = label;
-        resultText.innerHTML = text;
-        resultMeta.innerHTML = `<p><strong>Pontuação:</strong> ${sum} de ${maxSum} (${Math.round(pct*100)}%)</p><p><small>Interpretação adaptada a partir de conceitos do livro de Carol S. Dweck.</small></p>`;
-        showResult();
-      }
-
-      function showResult(){ resultPanel.setAttribute('aria-hidden','false'); resultPanel.classList.add('visible'); closeResult.focus(); }
-      function hideResult(){ resultPanel.classList.remove('visible'); resultPanel.setAttribute('aria-hidden','true'); }
-
-      function resetTest(){ answers = new Array(total).fill(2); current = 0; updateUI(); hideResult(); }
-
-      function saveResultAsPdf(){
-        const element = document.querySelector('.result-card');
-        const opt = { margin: 10, filename: `resultado-mindset-${new Date().toISOString().slice(0,10)}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, logging: false }, jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' } };
-        html2pdf().set(opt).from(element).save();
-      }
-
-      // handlers
-      closeResult.addEventListener('click', hideResult);
-      retryTest.addEventListener('click', function(){ hideResult(); resetTest(); startTest(); });
-      savePdf.addEventListener('click', saveResultAsPdf);
-
-      document.addEventListener('keydown', function(e){
-        if(e.key==='Escape' && resultPanel.classList.contains('visible')) hideResult();
-        if(e.key==='ArrowRight') nextBtn.click();
-        if(e.key==='ArrowLeft') prevBtn.click();
-      });
-
-      // inicializa mostrando a capa
-      showCover();
-    })();
-  </script>
 </body>
 </html>
-
