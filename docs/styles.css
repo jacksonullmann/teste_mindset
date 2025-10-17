@@ -69,14 +69,75 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
   .result-card{width:calc(100% - 24px);padding:16px;}
   .result-actions{justify-content:space-between;}
   /* CAPA / INTRO */
-.hidden{display:none;}
-.cover{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;background:linear-gradient(180deg,#fafafa,#f3f7fb);}
-.cover-card{max-width:920px;background:#fff;padding:28px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.08);text-align:center;}
-.cover-title{font-size:1.9rem;margin:0 0 8px;color:#222;}
-.cover-sub{font-weight:700;color:#333;margin:0 0 12px;}
-.cover-desc{color:#555;line-height:1.5;margin:0 0 18px;}
-.cover-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-.cover .qnav{padding:12px 20px;font-size:1rem;}
+/* CAPA / INTRO - regras fora de media queries */
+.hidden { display: none; }
+
+.cover {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  background: linear-gradient(180deg, #fafafa, #f3f7fb);
+  box-sizing: border-box;
+}
+
+.cover-card {
+  width: 100%;
+  max-width: 920px;
+  background: #fff;
+  padding: 36px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  text-align: center;
+  box-sizing: border-box;
+  margin: 0 12px;
+}
+
+.cover-title {
+  font-size: 2.1rem;
+  margin: 0 0 8px;
+  color: #222;
+  line-height: 1.05;
+}
+
+.cover-sub {
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 12px;
+}
+
+.cover-desc {
+  color: #555;
+  line-height: 1.6;
+  margin: 0 0 18px;
+  font-size: 1rem;
+}
+
+/* botões da capa */
+.cover-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.cover .qnav {
+  padding: 12px 22px;
+  font-size: 1rem;
+  border-radius: 8px;
+}
+
+/* Ajustes para telas menores */
+@media (max-width: 640px) {
+  .cover { padding: 28px 12px; }
+  .cover-card { padding: 20px; }
+  .cover-title { font-size: 1.6rem; }
+  .cover-desc { font-size: 0.98rem; }
+  .cover-sub { font-size: 1rem; }
+  .cover .qnav { padding: 10px 16px; font-size: 0.98rem; width: auto; }
 
 }
+
 
