@@ -122,13 +122,28 @@
       const retryTest = document.getElementById('retryTest');
 
       function showCover(){ cover.classList.remove('hidden'); app.classList.add('hidden'); }
-      function startTest(){ cover.classList.add('hidden'); app.classList.remove('hidden'); slider.focus(); }
+     function startTest(){
+  // garante que o cover suma completamente
+  cover.classList.add('hidden');
+  cover.setAttribute('aria-hidden','true');
 
-      startBtn.addEventListener('click', function(){ startTest(); resetTest(); });
-      backToCover.addEventListener('click', function(){ showCover(); });
-      learnMore.addEventListener('click', function(){
-        alert('Este teste é uma adaptação baseada nas pesquisas de Carol S. Dweck sobre Mindset. Responda honestamente e veja sua interpretação ao final.');
-      });
+  // mostra o app e garante foco no controle
+  app.classList.remove('hidden');
+  app.removeAttribute('aria-hidden');
+  slider.focus();
+
+  // rola para o topo do conteúdo do teste (evita que o topo da capa continue visível)
+  try { window.scrollTo({ top: 0, behavior: 'instant' }); } catch(e) { window.scrollTo(0,0); }
+}
+
+// Listener do botão Começar (substituir o existente)
+startBtn.removeEventListener?.('click', startTest); // tentativa segura de remover listener antigo
+startBtn.addEventListener('click', function(){
+  // reset do teste e iniciar
+  resetTest();
+  startTest();
+});
+
 
       function updateUI(){
         qnum.textContent = (current + 1);
@@ -212,3 +227,4 @@
   </script>
 </body>
 </html>
+
