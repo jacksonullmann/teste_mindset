@@ -311,5 +311,5 @@ function downloadResultPdf(){
     b.classList.add('visible');
     setTimeout(function(){ b.classList.remove('visible'); }, 8000);
   };
-  // chamar quando abrimos o PDF em nova aba (no fluxo de downloadResultPdf)
+// garantia: fecha qualquer IIFE ou bloco aberto no final do arquivo
 })();
