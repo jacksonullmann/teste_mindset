@@ -104,3 +104,21 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 /* remove visualmente o botão Voltar nas perguntas */
 #backToCover { display: none !important; pointer-events: none !important; }
 
+/* aviso simples para usuários iOS sobre salvar PDF */
+.ios-save-banner {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 18px;
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  z-index: 9999;
+  display: none;
+  text-align: center;
+}
+.ios-save-banner.visible { display: block; }
+
+
