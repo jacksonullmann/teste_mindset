@@ -116,13 +116,22 @@ function startTest(){
 }
 
   function updateUI(){
-    if(qnum) qnum.textContent = (current + 1);
-    if(qtext) qtext.textContent = questions[current];
-    if(progressBar) progressBar.style.width = (((current + 1) / total) * 100) + '%';
-    if(slider) slider.value = answers[current];
-    if(prevBtn){ prevBtn.disabled = current === 0; prevBtn.classList.toggle('disabled', current === 0); }
-    if(nextBtn) nextBtn.textContent = current === total - 1 ? 'VER RESULTADO' : 'PRÓXIMO';
+  try {
+    if (qnum) qnum.textContent = String(current + 1);
+    if (qtext) qtext.textContent = questions[current] || '';
+    if (progressBar) progressBar.style.width = (((current + 1) / total) * 100) + '%';
+    if (slider) slider.value = String(answers[current] ?? 2);
+    if (prevBtn) {
+      prevBtn.disabled = (current === 0);
+      prevBtn.classList.toggle('disabled', current === 0);
+    }
+    if (nextBtn) {
+      nextBtn.textContent = (current === total - 1) ? 'VER RESULTADO' : 'PRÓXIMO';
+    }
+  } catch (err) {
+    console.error('[teste_mindset] updateUI error:', err);
   }
+}
 
   function resetTest(){
     log('reset Test');
@@ -252,6 +261,7 @@ function showResult(){
   window.__testeMindset = { startTest, showCover, updateUI, computeAndShowResult, resetTest };
   log('script inicializado. startBtn exists:', !!startBtn, 'cover exists:', !!cover, 'app exists:', !!app);
 })();
+
 
 
 
