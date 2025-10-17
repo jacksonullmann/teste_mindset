@@ -44,7 +44,9 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 .result-actions .qnav.primary{margin-left:6px;}
 
 /* CAPA / INTRO */
-.hidden{display:none;}
+/* Força ocultação quando a classe .hidden é aplicada */
+.hidden { display: none !important; visibility: hidden !important; pointer-events: none !important; }
+
 .cover{
   min-height:100vh;
   display:flex;
@@ -98,3 +100,4 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
   .cover-sub{font-size:1rem;}
   .cover .qnav{padding:10px 16px;font-size:0.98rem;width:auto;}
 }
+
