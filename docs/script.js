@@ -53,11 +53,22 @@
   // funções básicas
   function log(...args){ if(window && window.console) console.log('[teste_mindset]', ...args); }
 
+function moveFocusAwayFrom(node){
+  // se o elemento focado for descendente de node, mova foco para um alvo visível seguro
+  const active = document.activeElement;
+  if(!active) return;
+  try {
+    if(node && node.contains(active)){
+      if(startBtn) { startBtn.focus(); }
+      else if(nextBtn) { nextBtn.focus(); }
+      else { active.blur(); }
+    }
+  } catch(e){ try { active.blur(); } catch(e){} }
+}
+
 function showCover(){
-  // garante que nada focado permaneça dentro do app antes de esconder
-  if(document.activeElement && cover && cover.contains(document.activeElement)){
-    document.activeElement.blur();
-  }
+  // se algo dentro do app estiver focado, retire foco antes de aplicar aria-hidden
+  moveFocusAwayFrom(app);
   if(cover){
     cover.classList.remove('hidden');
     cover.style.display = '';
@@ -68,16 +79,27 @@ function showCover(){
     app.style.display = 'none';
     app.setAttribute('aria-hidden','true');
   }
-  // foca no botão começar para navegação por teclado
   if(startBtn) startBtn.focus();
   window.scrollTo(0,0);
 }
 
 function startTest(){
-  // se algo dentro do resultado tiver foco, limpa antes de esconder elementos
-  if(document.activeElement && resultPanel && resultPanel.contains(document.activeElement)){
-    document.activeElement.blur();
+  // se algo dentro do resultPanel estiver focado, retire antes de esconder a capa
+  moveFocusAwayFrom(resultPanel);
+  if(cover){
+    cover.classList.add('hidden');
+    cover.style.display = 'none';
+    cover.setAttribute('aria-hidden','true');
   }
+  if(app){
+    app.classList.remove('hidden');
+    app.style.display = '';
+    app.setAttribute('aria-hidden','false');
+  }
+  resetTest();
+  if(slider) slider.focus();
+  window.scrollTo(0,0);
+}
   if(cover){
     cover.classList.add('hidden');
     cover.style.display = 'none';
@@ -216,5 +238,6 @@ function showResult(){
   window.__testeMindset = { startTest, showCover, updateUI, computeAndShowResult, resetTest };
   log('script inicializado. startBtn exists:', !!startBtn, 'cover exists:', !!cover, 'app exists:', !!app);
 })();
+
 
 
