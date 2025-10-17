@@ -215,18 +215,17 @@
   showCover();
   log('script inicializado. startBtn exists:', !!startBtn, 'cover exists:', !!cover, 'app exists:', !!app);
 
-  // chama quando o usuário clica em "Salvar em PDF"
 function downloadResultPdf(){
-  const element = document.querySelector('.result-card');
+  var element = document.querySelector('.result-card');
   if(!element){
     alert('Resultado não encontrado para gerar PDF.');
     return;
   }
 
-  // opção 1: html2pdf se disponível
+  // 1) tenta html2pdf se disponível
   if (typeof html2pdf === 'function') {
     try {
-      const opt = {
+      var opt = {
         margin: 10,
         filename: 'resultado-mindset-' + (new Date().toISOString().slice(0,10)) + '.pdf',
         image: { type: 'jpeg', quality: 0.98 },
@@ -236,45 +235,68 @@ function downloadResultPdf(){
       html2pdf().set(opt).from(element).save();
       return;
     } catch (err) {
-      console.warn('html2pdf falhou, tentando fallback', err);
+      console.warn('[teste_mindset] html2pdf falhou, tentando fallback', err);
     }
   }
 
-  // opção 2: html2canvas + jsPDF manual (se essas libs existirem)
-  if (typeof html2canvas === 'function' && typeof window.jspdf !== 'undefined') {
-    html2canvas(element, { scale: 2, useCORS: true }).then(function(canvas){
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
-      const pdf = new window.jspdf.jsPDF('p', 'pt', 'a4');
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = pageWidth - 20;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      pdf.addImage(imgData, 'JPEG', 10, 10, imgWidth, imgHeight);
-      const pdfBlob = pdf.output('blob');
-      const url = URL.createObjectURL(pdfBlob);
-      const a = document.createElement('a');
+  // 2) tenta html2canvas + jsPDF -> Blob
+  var createPdfBlob = function(){
+    return new Promise(function(resolve, reject){
+      if (typeof html2canvas !== 'function' || typeof window.jspdf === 'undefined') {
+        return reject(new Error('html2canvas ou jsPDF não disponíveis'));
+      }
+      try {
+        html2canvas(element, { scale: 2, useCORS: true }).then(function(canvas){
+          try {
+            var imgData = canvas.toDataURL('image/jpeg', 0.95);
+            var pdf = new window.jspdf.jsPDF('p', 'pt', 'a4');
+            var pageWidth = pdf.internal.pageSize.getWidth();
+            var imgWidth = pageWidth - 20;
+            var imgHeight = (canvas.height * imgWidth) / canvas.width;
+            pdf.addImage(imgData, 'JPEG', 10, 10, imgWidth, imgHeight);
+            var pdfBlob = pdf.output('blob');
+            resolve(pdfBlob);
+          } catch (e){
+            reject(e);
+          }
+        }).catch(reject);
+      } catch (e){ reject(e); }
+    });
+  };
+
+  createPdfBlob().then(function(pdfBlob){
+    var filename = 'resultado-mindset-' + (new Date().toISOString().slice(0,10)) + '.pdf';
+    var url = URL.createObjectURL(pdfBlob);
+
+    // detecta iOS Safari (userAgent check simples)
+    var isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent);
+
+    if (isIOS) {
+      // iOS: abrir em nova aba para que o usuário possa usar o Share / Salvar em Arquivos
+      window.open(url, '_blank');
+      // opcional: mostrar instrução breve
+      try { alert('O PDF foi aberto em nova aba. Use o botão de partilha ou pressione longo sobre o documento para salvar em Arquivos.'); } catch(e){}
+      // revoga depois de um tempo (não imediato para não invalidar a aba)
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 30000);
+    } else {
+      // Desktop e navegadores que aceitam download programático
+      var a = document.createElement('a');
       a.href = url;
-      a.download = 'resultado-mindset-' + (new Date().toISOString().slice(0,10)) + '.pdf';
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url), 10000);
-    }).catch(function(){ window.print(); });
-    return;
-  }
-
-  // fallback final: abrir diálogo de impressão (usuário pode "Salvar em Arquivos" no iOS)
-  window.print();
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 10000);
+    }
+  }).catch(function(err){
+    console.warn('[teste_mindset] erro ao criar PDF blob, fallback para print', err);
+    window.print();
+  });
 }
 
-// conectar ao botão (se já não estiver conectado)
-const _saveBtn = document.getElementById('savePdf');
-if(_saveBtn) {
-  _saveBtn.removeEventListener?.('click', downloadResultPdf);
-  _saveBtn.addEventListener('click', downloadResultPdf);
-}
 
   
 })();
+
 
 
