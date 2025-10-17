@@ -190,5 +190,4 @@
 
   // inicializa mostrando a capa
   showCover();
-}();
-
+})();
