@@ -313,8 +313,3 @@ function downloadResultPdf(){
   };
   // chamar quando abrimos o PDF em nova aba (no fluxo de downloadResultPdf)
 })();
-
-
-
-
-
