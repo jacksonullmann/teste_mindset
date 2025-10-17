@@ -1,18 +1,28 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Teste de Mindset</title>
-
-  <!-- CSS -->
   <link rel="stylesheet" href="styles.css">
-
-  <!-- html2pdf bundle (CDN) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js" integrity="sha512-MpDFIChbcXl2QgipQrt1VcPHMldRILetapBl5MPCA9Y8r7qvlwx1/Mc9hNTzY+kS5kX6PdoDq41ws1HiVNLdZA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
-  <div class="container">
+  <!-- CAPA / INTRO -->
+  <main id="cover" class="cover">
+    <div class="cover-card">
+      <h1 class="cover-title">Teste de Mindset</h1>
+      <p class="cover-sub">Descubra como suas crenças sobre inteligência e talento influenciam sua abordagem diante de desafios, esforço e aprendizado.</p>
+      <p class="cover-desc">Este questionário de 20 itens foi adaptado com base nas pesquisas sobre Mindset de Carol S. Dweck. Para cada afirmação, mova a barra entre "Discordo" e "Concordo". Não existem respostas certas — responda com sincero segundo o que costuma sentir.</p>
+      <div class="cover-actions">
+        <button id="startBtn" class="qnav primary">Começar</button>
+        <button id="learnMore" class="qnav">Saiba mais</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- CONTEÚDO DO TESTE -->
+  <div id="app" class="container hidden">
     <div class="qcont" role="application" aria-labelledby="qHeading">
       <h3 id="qHeading">Questão <span id="qnum">1</span> de 20</h3>
 
@@ -39,6 +49,7 @@
       <div class="process">
         <button id="prevBtn" class="qnav" aria-label="Pergunta anterior">ANTERIOR</button>
         <div class="spacer"></div>
+        <button id="backToCover" class="qnav">Voltar</button>
         <button id="nextBtn" class="qnav primary" aria-label="Próxima pergunta">PRÓXIMO</button>
       </div>
     </div>
@@ -88,6 +99,13 @@
       let current = 0;
       let answers = new Array(total).fill(2);
 
+      // elementos
+      const cover = document.getElementById('cover');
+      const startBtn = document.getElementById('startBtn');
+      const learnMore = document.getElementById('learnMore');
+      const app = document.getElementById('app');
+      const backToCover = document.getElementById('backToCover');
+
       const qnum = document.getElementById('qnum');
       const qtext = document.getElementById('questionText');
       const progressBar = document.getElementById('progressBar');
@@ -102,6 +120,15 @@
       const closeResult = document.getElementById('closeResult');
       const savePdf = document.getElementById('savePdf');
       const retryTest = document.getElementById('retryTest');
+
+      function showCover(){ cover.classList.remove('hidden'); app.classList.add('hidden'); }
+      function startTest(){ cover.classList.add('hidden'); app.classList.remove('hidden'); slider.focus(); }
+
+      startBtn.addEventListener('click', function(){ startTest(); resetTest(); });
+      backToCover.addEventListener('click', function(){ showCover(); });
+      learnMore.addEventListener('click', function(){
+        alert('Este teste é uma adaptação baseada nas pesquisas de Carol S. Dweck sobre Mindset. Responda honestamente e veja sua interpretação ao final.');
+      });
 
       function updateUI(){
         qnum.textContent = (current + 1);
@@ -157,45 +184,20 @@
         showResult();
       }
 
-      function showResult(){
-        resultPanel.setAttribute('aria-hidden','false');
-        resultPanel.classList.add('visible');
-        closeResult.focus();
-      }
+      function showResult(){ resultPanel.setAttribute('aria-hidden','false'); resultPanel.classList.add('visible'); closeResult.focus(); }
+      function hideResult(){ resultPanel.classList.remove('visible'); resultPanel.setAttribute('aria-hidden','true'); }
 
-      function hideResult(){
-        resultPanel.classList.remove('visible');
-        resultPanel.setAttribute('aria-hidden','true');
-      }
-
-      function resetTest(){
-        answers = new Array(total).fill(2);
-        current = 0;
-        updateUI();
-        hideResult();
-        slider.focus();
-      }
+      function resetTest(){ answers = new Array(total).fill(2); current = 0; updateUI(); hideResult(); }
 
       function saveResultAsPdf(){
-        // Seleciona o elemento que contém o resultado (formato já amigável)
         const element = document.querySelector('.result-card');
-
-        // Opções html2pdf recomendadas para resultado: A4, margem pequena, boa qualidade de imagem
-        const opt = {
-          margin:       10,
-          filename:     `resultado-mindset-${new Date().toISOString().slice(0,10)}.pdf`,
-          image:        { type: 'jpeg', quality: 0.98 },
-          html2canvas:  { scale: 2, useCORS: true, logging: false },
-          jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' }
-        };
-
-        // Gera e salva o PDF no cliente
+        const opt = { margin: 10, filename: `resultado-mindset-${new Date().toISOString().slice(0,10)}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, logging: false }, jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' } };
         html2pdf().set(opt).from(element).save();
       }
 
       // handlers
       closeResult.addEventListener('click', hideResult);
-      retryTest.addEventListener('click', resetTest);
+      retryTest.addEventListener('click', function(){ hideResult(); resetTest(); startTest(); });
       savePdf.addEventListener('click', saveResultAsPdf);
 
       document.addEventListener('keydown', function(e){
@@ -204,8 +206,8 @@
         if(e.key==='ArrowLeft') prevBtn.click();
       });
 
-      // inicializa
-      updateUI();
+      // inicializa mostrando a capa
+      showCover();
     })();
   </script>
 </body>
