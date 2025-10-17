@@ -228,7 +228,6 @@ function downloadResultPdf(){
     return;
   }
 
-  // 1) tenta html2pdf se disponível
   if (typeof html2pdf === 'function') {
     try {
       var opt = {
@@ -245,7 +244,6 @@ function downloadResultPdf(){
     }
   }
 
-  // 2) tenta html2canvas + jsPDF -> Blob
   var createPdfBlob = function(){
     return new Promise(function(resolve, reject){
       if (typeof html2canvas !== 'function' || typeof window.jspdf === 'undefined') {
@@ -273,20 +271,14 @@ function downloadResultPdf(){
   createPdfBlob().then(function(pdfBlob){
     var filename = 'resultado-mindset-' + (new Date().toISOString().slice(0,10)) + '.pdf';
     var url = URL.createObjectURL(pdfBlob);
-
-    // detecta iOS Safari (userAgent check simples)
     var isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent);
 
     if (isIOS) {
-      // iOS: abrir em nova aba para que o usuário possa usar o Share / Salvar em Arquivos
       window.open(url, '_blank');
       if (typeof window.__showIosSaveBanner === 'function') window.__showIosSaveBanner();
-      // opcional: mostrar instrução breve
       try { alert('O PDF foi aberto em nova aba. Use o botão de partilha ou pressione longo sobre o documento para salvar em Arquivos.'); } catch(e){}
-      // revoga depois de um tempo (não imediato para não invalidar a aba)
       setTimeout(function(){ URL.revokeObjectURL(url); }, 30000);
     } else {
-      // Desktop e navegadores que aceitam download programático
       var a = document.createElement('a');
       a.href = url;
       a.download = filename;
@@ -301,7 +293,7 @@ function downloadResultPdf(){
   });
 }
 
-// mostra banner de instrução para iOS quando o PDF é aberto em nova aba
+// banner iOS
 (function(){
   var isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent);
   if(!isIOS) return;
@@ -310,15 +302,17 @@ function downloadResultPdf(){
   banner.id = 'iosSaveBanner';
   banner.innerHTML = 'PDF aberto. Use o botão de partilha ou pressione longo para salvar em Arquivos.';
   document.body.appendChild(banner);
-  // função para exibir por 8 segundos
   window.__showIosSaveBanner = function(){
     var b = document.getElementById('iosSaveBanner');
     if(!b) return;
     b.classList.add('visible');
     setTimeout(function(){ b.classList.remove('visible'); }, 8000);
   };
-// garantia: fecha qualquer IIFE ou bloco aberto no final do arquivo
 })();
+
+// fim do arquivo - garante fechamento correto
+})();
+
 
 
 
