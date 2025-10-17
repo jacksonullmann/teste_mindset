@@ -214,5 +214,67 @@
   updateUI();
   showCover();
   log('script inicializado. startBtn exists:', !!startBtn, 'cover exists:', !!cover, 'app exists:', !!app);
+
+  // chama quando o usuário clica em "Salvar em PDF"
+function downloadResultPdf(){
+  const element = document.querySelector('.result-card');
+  if(!element){
+    alert('Resultado não encontrado para gerar PDF.');
+    return;
+  }
+
+  // opção 1: html2pdf se disponível
+  if (typeof html2pdf === 'function') {
+    try {
+      const opt = {
+        margin: 10,
+        filename: 'resultado-mindset-' + (new Date().toISOString().slice(0,10)) + '.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+      return;
+    } catch (err) {
+      console.warn('html2pdf falhou, tentando fallback', err);
+    }
+  }
+
+  // opção 2: html2canvas + jsPDF manual (se essas libs existirem)
+  if (typeof html2canvas === 'function' && typeof window.jspdf !== 'undefined') {
+    html2canvas(element, { scale: 2, useCORS: true }).then(function(canvas){
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const pdf = new window.jspdf.jsPDF('p', 'pt', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pageWidth - 20;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      pdf.addImage(imgData, 'JPEG', 10, 10, imgWidth, imgHeight);
+      const pdfBlob = pdf.output('blob');
+      const url = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'resultado-mindset-' + (new Date().toISOString().slice(0,10)) + '.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url), 10000);
+    }).catch(function(){ window.print(); });
+    return;
+  }
+
+  // fallback final: abrir diálogo de impressão (usuário pode "Salvar em Arquivos" no iOS)
+  window.print();
+}
+
+// conectar ao botão (se já não estiver conectado)
+const _saveBtn = document.getElementById('savePdf');
+if(_saveBtn) {
+  _saveBtn.removeEventListener?.('click', downloadResultPdf);
+  _saveBtn.addEventListener('click', downloadResultPdf);
+}
+
+  
 })();
+
 
