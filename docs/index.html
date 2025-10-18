@@ -95,32 +95,35 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 </script>  
-  <script>
-document.addEventListener('DOMContentLoaded', () => {
-  // FECHAR: fecha modal/resultado (oculta o elemento de resultado)
-  const btnFechar = document.getElementById('btnFechar') || document.querySelector('[data-action="fechar"]');
-  const areaResultado = document.getElementById('resultado') || document.querySelector('.resultado') || document.getElementById('content');
+ <!-- CDN html2pdf -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 
-  if (btnFechar && areaResultado) {
-    btnFechar.addEventListener('click', () => {
-      areaResultado.style.display = 'none';
-      // se houver um modal, remova a classe de aberto
-      document.body.classList.remove('resultado-aberto');
-    });
+<script>
+document.addEventListener('click', (e) => {
+  const t = e.target;
+
+  if (t.matches('#btnSalvarPdf')) {
+    e.preventDefault();
+    const el = document.getElementById('resultado') || document.body;
+    html2pdf().from(el).set({margin:10, filename:'resultado.pdf', html2canvas:{scale:2, useCORS:true}}).save()
+      .catch(()=> alert('Falha ao gerar PDF. Use Imprimir → Salvar como PDF.'));
   }
 
-  // REFAZER TESTE: limpa respostas e redireciona/mostra a primeira página
-  const btnRefazer = document.getElementById('btnRefazer') || document.querySelector('[data-action="refazer-teste"]');
-  if (btnRefazer) {
-    btnRefazer.addEventListener('click', () => {
-      // exemplo simples: recarrega a página
-      window.location.href = window.location.pathname;
-      // ou usar history.replaceState/mostrar tela inicial se for SPA
-    });
+  if (t.matches('#btnFechar')) {
+    e.preventDefault();
+    const el = document.getElementById('resultado') || document.querySelector('.resultado') || document.body;
+    el.style.display = 'none';
+  }
+
+  if (t.matches('#btnRefazer')) {
+    e.preventDefault();
+    window.location.href = window.location.pathname;
   }
 });
 </script>
 
+
 </body>
 </html>
+
 
