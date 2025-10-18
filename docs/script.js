@@ -181,6 +181,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
-
+})(); // fecha IIFE externa iniciada no topo do arquivo
 
 
