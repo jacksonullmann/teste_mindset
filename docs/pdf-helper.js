@@ -13,29 +13,26 @@
       const card = document.querySelector(selector);
       if (!card) throw new Error('Elemento não encontrado: ' + selector);
 
-      // clona e limpa o clone de elementos não desejados
+      // prepara clone limpo do card para conversão (remove botões/ações)
       const clone = card.cloneNode(true);
-      // remove ações/botões marcados com .no-print e a área .result-actions
       clone.querySelectorAll('.no-print').forEach(el => el.remove());
       const actions = clone.querySelector('.result-actions');
       if (actions) actions.remove();
 
-      // opcional: garantir que meta exista (já populada no mostrarResultado)
-      if (!clone.querySelector('#resultMeta') && !clone.querySelector('.result-meta')) {
-        const meta = document.createElement('div');
-        meta.className = 'result-meta';
-        clone.appendChild(meta);
-      }
-
-      // construir filename com nome e data
-      let name = (card.dataset.participantName || 'Sem nome').trim();
-      if (!name) name = 'Sem nome';
-      const iso = card.dataset.resultDateISO || new Date().toISOString();
-      const datePart = iso.slice(0,10); // YYYY-MM-DD
+      // lê nome do input no momento da conversão (sem mostrar no painel)
+      const nameInput = document.getElementById('participantName');
+      let name = (nameInput && nameInput.value.trim()) || 'Sem_nome';
+      // normaliza para filename (substitui espaços e caracteres perigosos)
       const safeName = name.replace(/[^a-z0-9_\-]/gi, '_').slice(0,50);
+
+      // data atual em YYYY-MM-DD_HH-MM (para evitar dois arquivos iguais)
+      const now = new Date();
+      const pad = n => String(n).padStart(2,'0');
+      const datePart = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+
       const filename = `${filenameBase}_${safeName}_${datePart}.pdf`;
 
-      // converte o clone para blob (aguarda conversão)
+      // converte clone para blob
       const worker = html2pdf().set({
         margin: 10,
         image: { type: 'jpeg', quality: 0.98 },
@@ -45,7 +42,7 @@
 
       const blob = await worker.outputPdf('blob');
 
-      // comportamento cross-platform: download, share ou abrir em nova aba no iOS
+      // cross-platform: desktop download, iOS open/share fallback
       const isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) || (navigator.platform && /iP/.test(navigator.platform));
       if (isIOS && navigator.canShare && window.File) {
         try {
