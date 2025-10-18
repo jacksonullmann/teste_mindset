@@ -98,3 +98,6 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
   .cover-sub{font-size:1rem;}
   .cover .qnav{padding:10px 16px;font-size:0.98rem;width:auto;}
 }
+
+/* remove visualmente o botão Voltar nas perguntas */
+#backToCover { display: none !important; pointer-events: none !important; }
