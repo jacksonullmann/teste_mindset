@@ -126,80 +126,60 @@
     }
   }
 
-  // Listeners
-  startBtn && startBtn.addEventListener('click', showApp);
-  backToCover && backToCover.addEventListener('click', showCover);
+// listeners mínimos e robustos (substitua a seção equivalente em script.js)
+document.addEventListener('DOMContentLoaded', () => {
+  const resultPanel = document.getElementById('resultPanel');
+  const resultCard = document.getElementById('resultCard');
 
-  prevBtn && prevBtn.addEventListener('click', function () {
-    if (current > 0) {
-      current--;
-      renderQuestion();
+  // Mostrar resultado (caso precise chamar via código)
+  window.showResultPanel = function() {
+    if (resultPanel) {
+      resultPanel.classList.add('visible');
+      resultPanel.style.display = 'flex';
+      resultPanel.setAttribute('aria-hidden','false');
+      resultCard && resultCard.focus && resultCard.focus();
     }
-  });
+  };
 
-  nextBtn && nextBtn.addEventListener('click', function () {
-    if (current < total - 1) {
-      // grava e avança
-      if (slider) saveAnswer(slider.value);
-      current++;
-      renderQuestion();
-    } else {
-      // último -> mostrar resultado
-      if (slider) saveAnswer(slider.value);
-      showResultPanel();
+  // Ocultar resultado
+  const hideResultPanel = () => {
+    if (resultPanel) {
+      resultPanel.classList.remove('visible');
+      resultPanel.style.display = 'none';
+      resultPanel.setAttribute('aria-hidden','true');
     }
-  });
-
-  slider && slider.addEventListener('input', function () {
-    // resposta imediata ao mover
-    saveAnswer(this.value);
-  });
-
-  // Resultado: salvar PDF (usa html2pdf já incluído no index)
-  if (btnSalvarPdf) {
-    btnSalvarPdf.addEventListener('click', function (e) {
-      e.preventDefault();
-      if (!resultCard) return alert('Nada para salvar');
-      try {
-        const opt = {
-          margin: 10,
-          filename: 'resultado.pdf',
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-        html2pdf().set(opt).from(resultCard).save().catch(function (err) {
-          console.error('html2pdf error', err);
-          alert('Falha ao gerar PDF. Use Imprimir → Salvar como PDF.');
-        });
-      } catch (err) {
-        console.error('Erro ao gerar PDF', err);
-        alert('Erro ao gerar PDF. Use Imprimir → Salvar como PDF.');
-      }
-    });
-  }
+  };
 
   // Fechar
-  btnFechar && btnFechar.addEventListener('click', function (e) {
+  document.getElementById('btnFechar')?.addEventListener('click', (e) => {
     e.preventDefault();
     hideResultPanel();
   });
 
-  // Refazer
-  btnRefazer && btnRefazer.addEventListener('click', function (e) {
+  // Refazer (reinicia o teste)
+  document.getElementById('btnRefazer')?.addEventListener('click', (e) => {
     e.preventDefault();
-    // reinicia estado
-    answers = new Array(total).fill(2);
-    current = 0;
-    hideResultPanel();
-    showApp();
+    // reiniciar estado: recarrega a página para garantir limpeza simples
+    location.reload();
   });
 
-  // Start state
-  showCover();
+  // Salvar em PDF usando html2pdf (gera apenas o card de resultado)
+  document.getElementById('btnSalvarPdf')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (!resultCard) return alert('Nada para salvar');
+    if (!window.html2pdf) return alert('html2pdf não carregado. Use Imprimir → Salvar como PDF.');
 
-  // Expor util para debug/uso
-  window._testeMindset = {
-    questions, answers, calcResult, showResultPanel, showCover, showApp
-  };
+    const opt = {
+      margin: 10,
+      filename: 'resultado.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(resultCard).save().catch(() => {
+      alert('Falha ao gerar PDF. Use Imprimir → Salvar como PDF.');
+    });
+  });
+});
 })();
+
