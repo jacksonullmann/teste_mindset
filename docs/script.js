@@ -80,7 +80,7 @@
       if (qnum) qnum.textContent = String(current + 1);
       if (qtext) qtext.textContent = questions[current] || '';
       if (progressBar) progressBar.style.width = String(((current + 1) / total) * 100) + '%';
-      if (slider) slider.value = String(answers[current] ?? 2);
+      if (slider) slider.value = String(4 - (answers[current] ?? 2));
       if (prevBtn) {
         prevBtn.disabled = (current === 0);
         prevBtn.classList.toggle('disabled', current === 0);
@@ -94,7 +94,7 @@
   }
 
   if (slider) {
-    slider.addEventListener('input', function(){ answers[current] = parseInt(this.value,10) || 0; });
+    slider.addEventListener('input', function(){ answers[current] = 4 - parseInt(this.value,10) || 0; });
   }
 
   if (prevBtn) {
@@ -215,4 +215,5 @@
   showCover();
   log('script inicializado. startBtn exists:', !!startBtn, 'cover exists:', !!cover, 'app exists:', !!app);
 })();
+
 
