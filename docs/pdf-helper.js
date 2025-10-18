@@ -40,12 +40,39 @@
       // lê nome do input no momento da conversão (sem mostrar no painel)
       // lê nome do input no momento da conversão (sem mostrar no painel)
 // tenta: 1) valor atual do input, 2) localStorage, 3) fallback 'Sem_nome'
+// --- destaque visual do nome no PDF ---
 const nameInput = document.getElementById('participantName');
 let name = (nameInput && nameInput.value && nameInput.value.trim()) || null;
 if (!name) {
   try { name = localStorage.getItem('participantName') || null; } catch(e){ name = null; }
 }
 if (!name) name = 'Sem_nome';
+
+// cria o bloco estilizado
+const nameBox = document.createElement('div');
+nameBox.className = 'pdf-name-box';
+nameBox.style.cssText = `
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin: 20px 0;
+  font-size: 1rem;
+  color: #333;
+  font-family: sans-serif;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+`;
+
+// conteúdo: "Nome:" em negrito + nome normal
+nameBox.innerHTML = `<strong style="color:#444;">Nome:</strong> ${name}`;
+
+// insere o bloco no clone — ajuste a posição conforme preferir
+const scoreEl = clone.querySelector('#resultMeta') || clone.querySelector('.result-meta');
+if (scoreEl && scoreEl.parentNode) {
+  scoreEl.parentNode.insertBefore(nameBox, scoreEl.nextSibling);
+} else {
+  clone.insertBefore(nameBox, clone.firstChild);
+}
 
 // normaliza para filename: remove acentos, espaços e caracteres perigosos
 // preserva legibilidade convertendo acentos para ASCII
