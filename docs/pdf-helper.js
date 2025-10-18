@@ -73,7 +73,7 @@ nameBox.style.cssText = `
 // data atual formatada para exibição
 const now = new Date();
 const pad = n => String(n).padStart(2,'0');
-const formattedDate = `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+const formattedDate = `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()}`;
 
 // conteúdo do box: nome + data
 nameBox.innerHTML = `
