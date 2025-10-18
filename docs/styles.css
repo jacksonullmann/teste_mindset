@@ -1,41 +1,61 @@
-html,body{height:100%;margin:0;background:#ffffff;color:#222;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%;}
+/* styles.css - versão enxuta e ajustada */
+
+/* Reset / base */
+html,body{height:100%;margin:0;background:#ffffff;color:#222;font-family:Inter,system-ui,Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%;}
 .container{max-width:720px;margin:18px auto;padding:16px;box-sizing:border-box;width:calc(100% - 32px);}
 
-/* header / pergunta */
+/* Header / pergunta */
 .qcont{padding:12px;}
 .qcont h3{font-size:1.05rem;margin:6px 0 10px;text-align:left;color:#222;}
 .progress{background:#eee;height:10px;border-radius:8px;overflow:hidden;margin:12px 0 16px;}
-.progress > span{display:block;height:100%;background:#3498db;width:0%;transition:width .28s ease;}
+.progress>span{display:block;height:100%;background:#3498db;width:0%;transition:width .28s ease;}
 .question{font-size:1rem;margin:8px 0 18px;line-height:1.4;text-align:left;}
 
-/* anscont: labels próximas */
+/* Respostas / slider */
 .anscont{width:100%;box-sizing:border-box;}
 .labels-row{display:flex;justify-content:space-between;align-items:center;padding:0 6px;margin:0;gap:6px;}
-.label-left{font-weight:700;color:#222;text-align:left;flex:0 1 auto;min-width:0;max-width:48%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.label-right{font-weight:700;color:#222;text-align:right;flex:0 1 auto;min-width:0;max-width:48%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.label-left,.label-right{font-weight:700;color:#222;flex:0 1 auto;max-width:48%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .slider-row{display:block;width:100%;padding:0 6px 0 6px;box-sizing:border-box;margin-top:0;}
 .slider-cont{position:relative;width:100%;box-sizing:border-box;padding-top:6px;margin-top:-4px;}
 
-/* track e thumb */
 input[type=range]{-webkit-appearance:none;width:100%;height:12px;border-radius:10px;background:linear-gradient(90deg,#e0e0e0,#e0e0e0);outline:none;margin:0;box-sizing:border-box;}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:30px;height:30px;border-radius:50%;background:#3b3b3b;border:3px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.25);cursor:pointer;margin-top:-9px;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:#3b3b3b;border:3px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.25);cursor:pointer;margin-top:-9px;}
 input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:#3b3b3b;border:3px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.25);cursor:pointer;}
 
-/* divisões compactas */
 .divisions{position:absolute;left:6px;right:6px;top:0;display:flex;justify-content:space-between;pointer-events:none;height:12px;align-items:flex-start;}
 .divisions span{width:3px;height:10px;background:#999;opacity:.9;border-radius:1px;}
 
-/* navegação / controles */
+/* Navegação / botões */
 .process{margin-top:20px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;}
 .spacer{flex:1}
 .qnav{background:transparent;border:0;color:#3498db;font-weight:700;padding:10px 18px;border-radius:8px;cursor:pointer;}
 .qnav.disabled{color:#aaa;cursor:default;pointer-events:none;}
 .qnav.primary{background:#3498db;color:#fff;box-shadow:0 2px 6px rgba(52,152,219,.18);}
 
-/* painel de resultado */
-.result-panel{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);opacity:0;pointer-events:none;transition:opacity .2s ease;}
+/* CAPA / INTRO */
+.hidden{display:none !important;visibility:hidden !important;pointer-events:none !important;}
+.cover{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:48px 20px;background:linear-gradient(180deg,#fafafa,#f3f7fb);box-sizing:border-box;}
+.cover-card{width:100%;max-width:920px;background:#fff;padding:36px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.08);text-align:center;box-sizing:border-box;margin:0 12px;}
+.cover-title{font-size:2.1rem;margin:0 0 8px;color:#222;line-height:1.05;}
+.cover-sub{font-weight:700;color:#333;margin:0 0 12px;}
+.cover-desc{color:#555;line-height:1.6;margin:0 0 18px;font-size:1rem;}
+.cover-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;}
+.cover .qnav{padding:12px 22px;font-size:1rem;border-radius:8px;}
+
+/* Painel de resultado (visibilidade controlada por JS) */
+.result-panel{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.45);opacity:0;pointer-events:none;transition:opacity .18s ease;
+  padding:18px;box-sizing:border-box;z-index:1100;
+}
 .result-panel.visible{opacity:1;pointer-events:auto;}
-.result-card{background:#fff;color:#222;max-width:720px;width:calc(100% - 40px);padding:18px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.25);}
+.result-card{
+  background:#fff;color:#222;max-width:720px;width:100%;padding:18px;border-radius:10px;
+  box-shadow:0 8px 30px rgba(0,0,0,.25);outline:0;box-sizing:border-box;
+}
+.result-card:focus{outline:none;}
+
+/* result content */
 .result-card h2{margin:0 0 8px;font-size:1.15rem;}
 .result-text p{margin:6px 0;line-height:1.45;color:#333;}
 .result-meta{margin-top:8px;color:#666;font-size:0.95rem;}
@@ -43,37 +63,14 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 .result-actions .qnav{padding:8px 14px;border-radius:8px;}
 .result-actions .qnav.primary{margin-left:6px;}
 
-/* CAPA / INTRO */
-/* Força ocultação quando a classe .hidden é aplicada */
-.hidden { display: none !important; visibility: hidden !important; pointer-events: none !important; }
+/* Remove botão Back na UI de perguntas se não for usado */
+#backToCover{display:none !important;pointer-events:none !important;}
 
-.cover{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:48px 20px;
-  background:linear-gradient(180deg,#fafafa,#f3f7fb);
-  box-sizing:border-box;
-}
-.cover-card{
-  width:100%;
-  max-width:920px;
-  background:#fff;
-  padding:36px;
-  border-radius:12px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.08);
-  text-align:center;
-  box-sizing:border-box;
-  margin:0 12px;
-}
-.cover-title{font-size:2.1rem;margin:0 0 8px;color:#222;line-height:1.05;}
-.cover-sub{font-weight:700;color:#333;margin:0 0 12px;}
-.cover-desc{color:#555;line-height:1.6;margin:0 0 18px;font-size:1rem;}
-.cover-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;}
-.cover .qnav{padding:12px 22px;font-size:1rem;border-radius:8px;}
+/* iOS banner (opcional) */
+.ios-save-banner{position:fixed;left:12px;right:12px;bottom:18px;background:rgba(0,0,0,0.85);color:#fff;padding:10px 14px;border-radius:10px;font-size:13px;z-index:1200;display:none;text-align:center;}
+.ios-save-banner.visible{display:block;}
 
-/* MOBILE adjustments */
+/* Responsividade */
 @media (max-width:640px){
   .container{margin:8px auto;padding:12px;width:calc(100% - 20px);}
   .qcont h3{text-align:center;font-size:1.12rem;margin-bottom:8px;}
@@ -91,7 +88,7 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
   .process{flex-direction:column-reverse;gap:10px;}
   .qnav{width:100%;padding:12px 14px;font-size:1rem;}
   .qnav.primary{width:100%;}
-  .result-card{width:calc(100% - 24px);padding:16px;}
+  .result-card{width:100%;padding:16px;border-radius:10px;}
   .result-actions{justify-content:space-between;}
   .cover{padding:28px 12px;}
   .cover-card{padding:20px;}
@@ -101,24 +98,10 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
   .cover .qnav{padding:10px 16px;font-size:0.98rem;width:auto;}
 }
 
-/* remove visualmente o botão Voltar nas perguntas */
-#backToCover { display: none !important; pointer-events: none !important; }
-
-/* aviso simples para usuários iOS sobre salvar PDF */
-.ios-save-banner {
-  position: fixed;
-  left: 12px;
-  right: 12px;
-  bottom: 18px;
-  background: rgba(0,0,0,0.85);
-  color: #fff;
-  padding: 10px 14px;
-  border-radius: 10px;
-  font-size: 13px;
-  z-index: 9999;
-  display: none;
-  text-align: center;
+/* Print adjustments to make html2pdf / browser print behave better */
+@media print{
+  body{background:#fff;color:#000;}
+  .hidden, .qnav, .cover, .process, .spacer { display:none !important; }
+  .result-card{box-shadow:none;border-radius:0;padding:10mm;width:100%;}
+  .result-actions{display:none;}
 }
-.ios-save-banner.visible { display: block; }
-
-
