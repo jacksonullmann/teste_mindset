@@ -101,4 +101,28 @@
   });
 
   window.gerarEBaixarPdfAntes = gerarEBaixarPdfAntes;
+
+  document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('participantName');
+  const clearBtn = document.getElementById('clearName');
+
+  // carregar nome salvo se houver
+  try {
+    const saved = localStorage.getItem('participantName');
+    if (saved && input) input.value = saved;
+  } catch(e){ /* ignore */ }
+
+  // salvar automaticamente ao sair do campo
+  input?.addEventListener('change', () => {
+    try { localStorage.setItem('participantName', input.value.trim()); } catch(e){}
+  });
+
+  // limpar campo
+  clearBtn?.addEventListener('click', () => {
+    if (!input) return;
+    input.value = '';
+    try { localStorage.removeItem('participantName'); } catch(e){}
+    input.focus();
+  });
+
 })();
