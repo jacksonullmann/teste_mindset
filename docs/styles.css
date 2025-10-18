@@ -67,7 +67,7 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 }
 .cover-title{font-size:2.1rem;margin:0 0 8px;color:#222;line-height:1.05;}
 .cover-sub{font-weight:700;color:#333;margin:0 0 12px;}
-.cover-desc{color:#555;line-height:1.6;margin:0 0 18px;font-size:1rem;}
+.cover-desc{color:#555;line-height:1.2;margin:0 0 18px;font-size:1rem;}
 .cover-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;}
 .cover .qnav{padding:12px 22px;font-size:1rem;border-radius:8px;}
 
@@ -94,8 +94,8 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
   .cover{padding:28px 12px;}
   .cover-card{padding:20px;}
   .cover-title{font-size:1.6rem;}
-  .cover-desc{font-size:0.98rem;}
-  .cover-sub{font-size:1rem;}
+  .cover-desc{font-size:1.1rem;}
+  .cover-sub{font-size:1.2rem;}
   .cover .qnav{padding:10px 16px;font-size:0.98rem;width:auto;}
 }
 
@@ -186,6 +186,7 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
   .participant-name{ margin: 12px 14px; padding:10px; border-radius:10px; }
   .pn-input-wrap input{ font-size:0.95rem; }
 }
+
 
 
 
