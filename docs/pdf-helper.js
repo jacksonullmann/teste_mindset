@@ -38,16 +38,35 @@
       clone.insertBefore(styleTag, clone.firstChild);
 
       // lê nome do input no momento da conversão (sem mostrar no painel)
-      const nameInput = document.getElementById('participantName');
-      let name = (nameInput && nameInput.value.trim()) || 'Sem_nome';
-      const safeName = name.replace(/[^a-z0-9_\-]/gi, '_').slice(0,50);
+      // lê nome do input no momento da conversão (sem mostrar no painel)
+// tenta: 1) valor atual do input, 2) localStorage, 3) fallback 'Sem_nome'
+const nameInput = document.getElementById('participantName');
+let name = (nameInput && nameInput.value && nameInput.value.trim()) || null;
+if (!name) {
+  try { name = localStorage.getItem('participantName') || null; } catch(e){ name = null; }
+}
+if (!name) name = 'Sem_nome';
 
-      // data atual em YYYY-MM-DD_HH-MM-SS para filename
-      const now = new Date();
-      const pad = n => String(n).padStart(2,'0');
-      const datePart = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+// normaliza para filename: remove acentos, espaços e caracteres perigosos
+// preserva legibilidade convertendo acentos para ASCII
+const normalize = s => s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
+const safeName = normalize(name).replace(/[^a-z0-9_\-]/gi, '_').slice(0,50);
 
-      const filename = `${filenameBase}_${safeName}_${datePart}.pdf`;
+// opcional: inserir o nome no clone para que apareça no PDF (sem alterar UI)
+// se preferir NÃO mostrar no PDF, comente as 3 linhas abaixo
+const metaHolder = document.createElement('div');
+metaHolder.className = 'pdf-meta';
+metaHolder.style.cssText = 'font-size:0.9rem;color:#333;margin-bottom:8px;';
+metaHolder.textContent = `Nome: ${name}`;
+clone.insertBefore(metaHolder, clone.firstChild);
+
+// data atual em YYYY-MM-DD_HH-MM-SS para filename
+const now = new Date();
+const pad = n => String(n).padStart(2,'0');
+const datePart = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+
+const filename = `${filenameBase}_${safeName}_${datePart}.pdf`;
+
 
       // converte clone para blob (aguarda término)
       const worker = html2pdf().set({
