@@ -1,7 +1,12 @@
+/* pdf-helper.js - adaptado ao seu HTML
+   Espera encontrar no DOM:
+   - botão com id="savePdf"
+   - o card de resultado: element with class "result-card" (usado como fonte do PDF)
+*/
 (function(){
   'use strict';
 
-  async function gerarEBaixarPdfImediato(selector = '#resultCard', filename = 'resultado.pdf', btn = null) {
+  async function gerarEBaixarPdfImediato(selector = '.result-card', filename = 'resultado.pdf', btn = null) {
     if (btn && btn instanceof HTMLElement) {
       btn.setAttribute('disabled', 'disabled');
       btn.__origText = btn.textContent;
@@ -41,24 +46,25 @@
     }
   }
 
-  // auto-attach ao botão if exists
+  // Auto-attach ao botão #savePdf
   document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('btnSalvarPdf');
-    if (!btn) return;
-    // remove listeners duplicados clonando (seguro)
+    const btnId = 'savePdf';
+    const btn = document.getElementById(btnId);
+    if (!btn) return console.info('pdf-helper: botão', btnId, 'não encontrado');
+    // substitui por clone para remover listeners antigos se houver
     if (!btn.__pdfHelperAttached) {
       const clone = btn.cloneNode(true);
       clone.__pdfHelperAttached = true;
       btn.parentNode.replaceChild(clone, btn);
     }
-    const boundBtn = document.getElementById('btnSalvarPdf');
+    const boundBtn = document.getElementById(btnId);
     boundBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      gerarEBaixarPdfImediato('#resultCard', 'resultado.pdf', boundBtn)
-        .then(res => { if (!res.ok) alert('Falha ao gerar PDF: ' + (res.error?.message || '')) });
+      gerarEBaixarPdfImediato('.result-card', 'resultado.pdf', boundBtn)
+        .then(res => { if (!res.ok) alert('Falha ao gerar PDF: ' + (res.error?.message || '')); });
     });
   });
 
-  // exporta para uso manual se precisar
+  // exporta para uso manual
   window.gerarEBaixarPdfImediato = gerarEBaixarPdfImediato;
 })();
