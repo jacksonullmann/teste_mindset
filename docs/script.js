@@ -1,4 +1,4 @@
-// script.js - versão estável e defensiva
+// script-inverted.js - versão com questões invertidas por item
 (function(){
   const questions = [
     "Você pode aprender coisas novas, mas isso não mudará realmente o quão inteligente você é.",
@@ -25,22 +25,27 @@
 
   const total = questions.length;
   let current = 0;
+
+  // inicialização padrão (mantém compatibilidade)
   let answers = new Array(total).fill(2);
 
-  // elementos
+  // índices (zero-based) das questões que devem ser invertidas
+  const invertedIndices = [0,1,2,3,6,8,10,11,12,16];
+  const reversed = new Array(total).fill(false);
+  invertedIndices.forEach(i => { if (i >= 0 && i < total) reversed[i] = true; });
+
+  // elementos do DOM (mesmos ids do script original)
   const cover = document.getElementById('cover');
   const startBtn = document.getElementById('startBtn');
   const learnMore = document.getElementById('learnMore');
   const app = document.getElementById('app');
   const backToCover = document.getElementById('backToCover');
-
   const qnum = document.getElementById('qnum');
   const qtext = document.getElementById('questionText');
   const progressBar = document.getElementById('progressBar');
   const slider = document.getElementById('answerSlider');
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
-
   const resultPanel = document.getElementById('resultPanel');
   const resultTitle = document.getElementById('resultTitle');
   const resultText = document.getElementById('resultText');
@@ -49,12 +54,7 @@
   const savePdf = document.getElementById('savePdf');
   const retryTest = document.getElementById('retryTest');
 
-  function log(){
-    if(window && window.console) {
-      const args = Array.prototype.slice.call(arguments);
-      console.log.apply(console, ['[teste_mindset]'].concat(args));
-    }
-  }
+  function log(){ if(window && window.console) { const args = Array.prototype.slice.call(arguments); console.log.apply(console, ['[teste_mindset]'].concat(args)); } }
 
   function showCover(){
     log('mostrar capa');
@@ -80,7 +80,12 @@
       if (qnum) qnum.textContent = String(current + 1);
       if (qtext) qtext.textContent = questions[current] || '';
       if (progressBar) progressBar.style.width = String(((current + 1) / total) * 100) + '%';
-      if (slider) slider.value = String(answers[current] ?? 2);
+
+      // Mostra no slider: se a questão for invertida, convertemos stored -> controle
+      const stored = answers[current] ?? 2;
+      const visible = reversed[current] ? (4 - stored) : stored;
+      if (slider) slider.value = String(visible);
+
       if (prevBtn) {
         prevBtn.disabled = (current === 0);
         prevBtn.classList.toggle('disabled', current === 0);
@@ -93,8 +98,12 @@
     }
   }
 
+  // Listener do slider: armazena o valor convertido conforme reversed[current]
   if (slider) {
-    slider.addEventListener('input', function(){ answers[current] = parseInt(this.value,10) || 0; });
+    slider.addEventListener('input', function(){
+      const raw = parseInt(this.value, 10) || 0;
+      answers[current] = reversed[current] ? (4 - raw) : raw;
+    });
   }
 
   if (prevBtn) {
@@ -118,38 +127,36 @@
     });
   }
 
- function computeAndShowResult(){
-  const sum = answers.reduce(function(a,b){ return a + b; }, 0);
-  const maxSum = 4 * total;
-  const pct = sum / maxSum;
+  function computeAndShowResult(){
+    const sum = answers.reduce(function(a,b){ return a + b; }, 0);
+    const maxSum = 4 * total;
+    const pct = sum / maxSum;
+    var label = '';
+    var text = '';
 
-  var label = '';
-  var text = '';
+    if(pct <= 0.40){
+      label = 'Mindset Fixo';
+      text = '<p>Suas respostas indicam uma preferência por um Mindset Fixo. Você tende a acreditar que inteligência e talento são traços estáticos e que esforço nem sempre altera resultados significativos. Isso pode fazer com que você evite desafios, desista mais rápido diante de dificuldades e veja esforço como algo menos valioso.</p>' +
+             '<p><em>Resumo:</em> foco na validação, aversão ao erro e busca por resultados imediatos. Sugestão: praticar a mentalidade de processo e encarar erros como aprendizado.</p>';
+    } else if(pct >= 0.60){
+      label = 'Mindset de Crescimento';
+      text = '<p>Suas respostas indicam uma preferência por um Mindset de Crescimento. Você tende a acreditar que habilidades podem ser desenvolvidas com esforço, estratégia e aprendizagem contínua. Isso favorece persistência, busca por desafios e valorização do processo de aprendizagem.</p>' +
+             '<p><em>Resumo:</em> valoriza esforço e prática deliberada, aceita feedback e persiste diante de dificuldades. Sugestão: definir metas de aprendizagem e celebrar progresso.</p>';
+    } else {
+      label = 'Mindset Indiferenciado';
+      text = '<p>Suas respostas sugerem um Mindset indiferenciado (ou misto). Isso significa que suas crenças oscilam entre acreditar que pessoas podem melhorar por meio do esforço e acreditar que talento é inato. Em algumas situações você reage com mentalidade de crescimento, em outras com mentalidade fixa.</p>' +
+             '<p><em>Resumo:</em> flexível, porém inconsistente; vale trabalhar a consciência situacional e estratégias para ativar o mindset de crescimento quando necessário.</p>';
+    }
 
-  if(pct <= 0.40){
-    label = 'Mindset Fixo';
-    text = '<p>Suas respostas indicam uma preferência por um Mindset Fixo. Você tende a acreditar que inteligência e talento são traços estáticos e que esforço nem sempre altera resultados significativos. Isso pode fazer com que você evite desafios, desista mais rápido diante de dificuldades e veja esforço como algo menos valioso.</p>' +
-           '<p><em>Resumo:</em> foco na validação, aversão ao erro e busca por resultados imediatos. Sugestão: praticar a mentalidade de processo e encarar erros como aprendizado.</p>';
-  } else if(pct >= 0.60){
-    label = 'Mindset de Crescimento';
-    text = '<p>Suas respostas indicam uma preferência por um Mindset de Crescimento. Você tende a acreditar que habilidades podem ser desenvolvidas com esforço, estratégia e aprendizagem contínua. Isso favorece persistência, busca por desafios e valorização do processo de aprendizagem.</p>' +
-           '<p><em>Resumo:</em> valoriza esforço e prática deliberada, aceita feedback e persiste diante de dificuldades. Sugestão: definir metas de aprendizagem e celebrar progresso.</p>';
-  } else {
-    label = 'Mindset Indiferenciado';
-    text = '<p>Suas respostas sugerem um Mindset indiferenciado (ou misto). Isso significa que suas crenças oscilam entre acreditar que pessoas podem melhorar por meio do esforço e acreditar que talento é inato. Em algumas situações você reage com mentalidade de crescimento, em outras com mentalidade fixa.</p>' +
-           '<p><em>Resumo:</em> flexível, porém inconsistente; vale trabalhar a consciência situacional e estratégias para ativar o mindset de crescimento quando necessário.</p>';
+    if (resultTitle) resultTitle.textContent = label;
+    if (resultText) resultText.innerHTML = text;
+    if (resultMeta) resultMeta.innerHTML = '<p><strong>Pontuação:</strong> ' + sum + ' de ' + maxSum + ' (' + Math.round(pct*100) + '%)</p>' +
+                                           '<p><small>Interpretação adaptada a partir de conceitos do livro de Carol S. Dweck.</small></p>';
+    showResult();
   }
-
-  if (resultTitle) resultTitle.textContent = label;
-  if (resultText) resultText.innerHTML = text;
-  if (resultMeta) resultMeta.innerHTML = '<p><strong>Pontuação:</strong> ' + sum + ' de ' + maxSum + ' (' + Math.round(pct*100) + '%)</p>' +
-                                         '<p><small>Interpretação adaptada a partir de conceitos do livro de Carol S. Dweck.</small></p>';
-  showResult();
-}
 
   function showResult(){
     if(resultPanel){
-      // garantir que nada focado fique escondido
       if(document.activeElement && resultPanel.contains(document.activeElement)){
         try { document.activeElement.blur(); } catch(e){}
       }
@@ -187,10 +194,10 @@
       jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
     };
     if (typeof html2pdf === 'function') {
-      try { html2pdf().set(opt).from(element).save(); } catch(e){ alert('Erro ao gerar PDF'); }
-    } else {
-      alert('PDF não disponível (biblioteca html2pdf não carregada).');
-    }
+      try {
+        html2pdf().set(opt).from(element).save();
+      } catch(e){ alert('Erro ao gerar PDF'); }
+    } else { alert('PDF não disponível (biblioteca html2pdf não carregada).'); }
   }
 
   // handlers
@@ -213,8 +220,5 @@
   // iniciar
   updateUI();
   showCover();
-  log('script inicializado. startBtn exists:', !!startBtn, 'cover exists:', !!cover, 'app exists:', !!app);
+  log('script-inverted inicializado. startBtn exists:', !!startBtn, 'cover exists:', !!cover, 'app exists:', !!app);
 })();
-
-
-
