@@ -91,7 +91,7 @@
         prevBtn.classList.toggle('disabled', current === 0);
       }
       if (nextBtn) {
-        nextBtn.textContent = (current === total - 1) ? 'VER RESULTADO' : 'PRÓXIMO';
+        nextBtn.textContent = (current === total - 1) ? 'TERMINAR' : 'PRÓXIMO';
       }
     } catch (err) {
       console.error('[teste_mindset] updateUI error:', err);
@@ -222,3 +222,4 @@
   showCover();
   log('script-inverted inicializado. startBtn exists:', !!startBtn, 'cover exists:', !!cover, 'app exists:', !!app);
 })();
+
