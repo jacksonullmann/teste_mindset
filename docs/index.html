@@ -21,8 +21,14 @@
       <p class="cover-sub">Descubra como suas crenças sobre inteligência e talento influenciam sua abordagem diante de desafios e aprendizado.</p>
       <p class="cover-desc">Responda com sinceridade. Não há respostas certas — apenas reflexões sobre sua maneira de encarar esforço, talento e feedback.</p>
       <!-- campo para o nome do participante (coloque antes do questionário) -->
-<div class="participant-name">  <label for="participantName">Seu nome</label>
-  <input id="participantName" name="participantName" type="text" placeholder="Digite seu nome" /></div>
+<div class="participant-name">
+  <label for="participantName">Seu nome</label>
+  <div class="pn-input-wrap">
+    <input id="participantName" name="participantName" type="text" placeholder="Digite seu nome" />
+    <button type="button" id="clearName" aria-label="Limpar nome" title="Limpar">×</button>
+  </div>
+</div>
+
 
 
       <div class="cover-actions">
@@ -82,6 +88,7 @@
   </div>
 </body>
 </html>
+
 
 
 
