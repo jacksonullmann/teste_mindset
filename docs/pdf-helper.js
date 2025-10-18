@@ -13,11 +13,53 @@
       const card = document.querySelector(selector);
       if (!card) throw new Error('Elemento não encontrado: ' + selector);
 
-      // clona o card para gerar um documento limpo (não modifica o DOM visível)
       const clone = card.cloneNode(true);
 
-      // 1) remover seletivamente elementos que não devem aparecer no PDF
-      // ajuste os seletores se seus IDs/classes forem diferentes
+      // --- gerar nome e data formatados ---
+      const nameInput = document.getElementById('participantName');
+      let name = (nameInput && nameInput.value && nameInput.value.trim()) || null;
+      if (!name) {
+        try { name = localStorage.getItem('participantName') || null; } catch(e){ name = null; }
+      }
+      if (!name) name = 'Sem_nome';
+
+      const now = new Date();
+      const pad = n => String(n).padStart(2,'0');
+      const meses = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+      const dia = now.getDate();
+      const mes = meses[now.getMonth()];
+      const ano = now.getFullYear();
+      const dataFormatada = `${dia} de ${mes} de ${ano}`;
+
+      // --- criar bloco estilizado com nome e data ---
+      const infoBox = document.createElement('div');
+      infoBox.className = 'pdf-info-box';
+      infoBox.style.cssText = `
+        background: #f5f5f5;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin: 20px 0;
+        font-size: 1rem;
+        color: #333;
+        font-family: sans-serif;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      `;
+      infoBox.innerHTML = `
+        <div><strong style="color:#444;">Nome:</strong> ${name}</div>
+        <div><strong style="color:#444;">Data:</strong> ${dataFormatada}</div>
+      `;
+      clone.insertBefore(infoBox, clone.firstChild);
+
+      // --- garantir via style inline no clone ---
+      const styleTag = document.createElement('style');
+      styleTag.textContent = `
+        .no-print { display: none !important; }
+        .result-actions, .qnav, button[id="savePdf"], button[id="retryTest"], button[id="closeResult"] { display: none !important; }
+      `;
+      clone.insertBefore(styleTag, clone.firstChild);
+
+      // --- remover botões e elementos indesejados ---
       [
         '#savePdf',
         '#retryTest',
@@ -29,87 +71,13 @@
         clone.querySelectorAll(sel).forEach(el => el.remove());
       });
 
-      // 2) garantir via style inline no clone (fallback caso o renderer ignore regras externas)
-      const styleTag = document.createElement('style');
-      styleTag.textContent = `
-        .no-print { display: none !important; }
-        .result-actions, .qnav, button[id="savePdf"], button[id="retryTest"], button[id="closeResult"] { display: none !important; }
-      `;
-      clone.insertBefore(styleTag, clone.firstChild);
+      // --- gerar nome de arquivo com nome e data ---
+      const normalize = s => s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
+      const safeName = normalize(name).replace(/[^a-z0-9_\-]/gi, '_').slice(0,50);
+      const datePart = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+      const filename = `${filenameBase}_${safeName}_${datePart}.pdf`;
 
- // --- gerar nome e data formatados ---
-const nameInput = document.getElementById('participantName');
-let name = (nameInput && nameInput.value && nameInput.value.trim()) || null;
-if (!name) {
-  try { name = localStorage.getItem('participantName') || null; } catch(e){ name = null; }
-}
-if (!name) name = 'Sem_nome';
-
-const now = new Date();
-const pad = n => String(n).padStart(2,'0');
-const meses = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
-const dia = now.getDate();
-const mes = meses[now.getMonth()];
-const ano = now.getFullYear();
-const dataFormatada = `${dia} de ${mes} de ${ano}`;
-
-// --- criar bloco estilizado com nome e data ---
-const infoBox = document.createElement('div');
-infoBox.className = 'pdf-info-box';
-infoBox.style.cssText = `
-  background: #f5f5f5;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 12px 16px;
-  margin: 20px 0;
-  font-size: 1rem;
-  color: #333;
-  font-family: sans-serif;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-`;
-
-infoBox.innerHTML = `
-  <div><strong style="color:#444;">Nome:</strong> ${name}</div>
-  <div><strong style="color:#444;">Data:</strong> ${dataFormatada}</div>
-`;
-
-// --- inserir no topo do clone ---
-clone.insertBefore(infoBox, clone.firstChild);
-
-// --- remover botões e elementos indesejados (executado por último) ---
-[
-  '#savePdf',
-  '#retryTest',
-  '#closeResult',
-  '.result-actions',
-  '.qnav',
-  '.no-print'
-].forEach(sel => {
-  clone.querySelectorAll(sel).forEach(el => el.remove());
-});
-
-// insere o bloco abaixo da pontuação, se existir
-if (metaEl && metaEl.parentNode) {
-  metaEl.parentNode.insertBefore(nameBox, metaEl.nextSibling);
-} else {
-  clone.insertBefore(nameBox, clone.firstChild);
-}
-
-
-// normaliza para filename: remove acentos, espaços e caracteres perigosos
-// preserva legibilidade convertendo acentos para ASCII
-const normalize = s => s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
-const safeName = normalize(name).replace(/[^a-z0-9_\-]/gi, '_').slice(0,50);
-
-// data atual em YYYY-MM-DD_HH-MM-SS para filename
-const now = new Date();
-const pad = n => String(n).padStart(2,'0');
-const datePart = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
-
-const filename = `${filenameBase}_${safeName}_${datePart}.pdf`;
-
-
-      // converte clone para blob (aguarda término)
+      // --- gerar PDF ---
       const worker = html2pdf().set({
         margin: 10,
         image: { type: 'jpeg', quality: 0.98 },
@@ -119,7 +87,7 @@ const filename = `${filenameBase}_${safeName}_${datePart}.pdf`;
 
       const blob = await worker.outputPdf('blob');
 
-      // comportamento cross-platform: desktop download, iOS open/share fallback
+      // --- comportamento cross-platform ---
       const isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) || (navigator.platform && /iP/.test(navigator.platform));
       if (isIOS && navigator.canShare && window.File) {
         try {
@@ -160,9 +128,8 @@ const filename = `${filenameBase}_${safeName}_${datePart}.pdf`;
     }
   }
 
-  // auto-attach ao botão #savePdf e comportamento do input de nome (uma única vez)
+  // --- auto-attach ao botão #savePdf e comportamento do input de nome ---
   document.addEventListener('DOMContentLoaded', () => {
-    // attach do botão salvar PDF
     const btn = document.getElementById('savePdf');
     if (btn) {
       if (!btn.__pdfHelperAttached) {
@@ -180,7 +147,6 @@ const filename = `${filenameBase}_${safeName}_${datePart}.pdf`;
       console.info('pdf-helper: botão #savePdf não encontrado');
     }
 
-    // participantName: carregar salvo, salvar on change, limpar
     const input = document.getElementById('participantName');
     const clearBtn = document.getElementById('clearName');
 
@@ -201,6 +167,5 @@ const filename = `${filenameBase}_${safeName}_${datePart}.pdf`;
     });
   });
 
-  // exporta para uso manual se necessário
   window.gerarEBaixarPdfAntes = gerarEBaixarPdfAntes;
 })();
