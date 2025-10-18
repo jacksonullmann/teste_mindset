@@ -37,16 +37,16 @@
       `;
       clone.insertBefore(styleTag, clone.firstChild);
 
-      // lê nome do input no momento da conversão (sem mostrar no painel)
-      // lê nome do input no momento da conversão (sem mostrar no painel)
-// tenta: 1) valor atual do input, 2) localStorage, 3) fallback 'Sem_nome'
-// --- destaque visual do nome no PDF ---
+// --- remover nome antigo e inserir bloco estilizado no PDF ---
 const nameInput = document.getElementById('participantName');
 let name = (nameInput && nameInput.value && nameInput.value.trim()) || null;
 if (!name) {
   try { name = localStorage.getItem('participantName') || null; } catch(e){ name = null; }
 }
 if (!name) name = 'Sem_nome';
+
+// remove qualquer elemento que já contenha o nome (ajuste seletor conforme seu HTML)
+clone.querySelectorAll('#resultMeta, .result-meta, .pdf-name-box').forEach(el => el.remove());
 
 // cria o bloco estilizado
 const nameBox = document.createElement('div');
@@ -63,8 +63,10 @@ nameBox.style.cssText = `
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 `;
 
-// conteúdo: "Nome:" em negrito + nome normal
 nameBox.innerHTML = `<strong style="color:#444;">Nome:</strong> ${name}`;
+
+// insere o bloco no topo do clone (ou ajuste a posição conforme preferir)
+clone.insertBefore(nameBox, clone.firstChild);
 
 // insere o bloco no clone — ajuste a posição conforme preferir
 const scoreEl = clone.querySelector('#resultMeta') || clone.querySelector('.result-meta');
