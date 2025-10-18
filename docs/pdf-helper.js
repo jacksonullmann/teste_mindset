@@ -37,7 +37,7 @@
       `;
       clone.insertBefore(styleTag, clone.firstChild);
 
-  // --- garantir nome único e estilizado no PDF ---
+ // --- gerar nome e data formatados ---
 const nameInput = document.getElementById('participantName');
 let name = (nameInput && nameInput.value && nameInput.value.trim()) || null;
 if (!name) {
@@ -45,20 +45,18 @@ if (!name) {
 }
 if (!name) name = 'Sem_nome';
 
-// local onde o nome costuma aparecer (sem apagar pontuação)
-const metaEl = clone.querySelector('#resultMeta') || clone.querySelector('.result-meta');
-if (metaEl) {
-  // remove apenas o trecho que contém "Nome:" (sem apagar pontuação)
-  const nomeNode = Array.from(metaEl.childNodes).find(n =>
-    n.textContent && /nome:/i.test(n.textContent)
-  );
-  if (nomeNode) metaEl.removeChild(nomeNode);
-}
+const now = new Date();
+const pad = n => String(n).padStart(2,'0');
+const meses = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const dia = now.getDate();
+const mes = meses[now.getMonth()];
+const ano = now.getFullYear();
+const dataFormatada = `${dia} de ${mes} de ${ano}`;
 
-// cria o bloco estilizado com nome + data
-const nameBox = document.createElement('div');
-nameBox.className = 'pdf-name-box';
-nameBox.style.cssText = `
+// --- criar bloco estilizado com nome e data ---
+const infoBox = document.createElement('div');
+infoBox.className = 'pdf-info-box';
+infoBox.style.cssText = `
   background: #f5f5f5;
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -70,16 +68,25 @@ nameBox.style.cssText = `
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 `;
 
-// data atual formatada para exibição
-const now = new Date();
-const pad = n => String(n).padStart(2,'0');
-const formattedDate = `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()}`;
-
-// conteúdo do box: nome + data
-nameBox.innerHTML = `
+infoBox.innerHTML = `
   <div><strong style="color:#444;">Nome:</strong> ${name}</div>
-  <div><strong style="color:#444;">Data:</strong> ${formattedDate}</div>
+  <div><strong style="color:#444;">Data:</strong> ${dataFormatada}</div>
 `;
+
+// --- inserir no topo do clone ---
+clone.insertBefore(infoBox, clone.firstChild);
+
+// --- remover botões e elementos indesejados (executado por último) ---
+[
+  '#savePdf',
+  '#retryTest',
+  '#closeResult',
+  '.result-actions',
+  '.qnav',
+  '.no-print'
+].forEach(sel => {
+  clone.querySelectorAll(sel).forEach(el => el.remove());
+});
 
 // insere o bloco abaixo da pontuação, se existir
 if (metaEl && metaEl.parentNode) {
