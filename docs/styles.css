@@ -101,3 +101,13 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 
 /* remove visualmente o botão Voltar nas perguntas */
 #backToCover { display: none !important; pointer-events: none !important; }
+/* estilo aplicado normalmente; clone usará estilos carregados */
+.no-print { display: none !important; }
+
+/* se quiser garantir fonte/escala no PDF */
+@media print {
+  .no-print { display: none !important; }
+  .result-card { page-break-inside: avoid; }
+}
+
+
