@@ -76,7 +76,7 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
   .container{margin:8px auto;padding:12px;width:calc(100% - 20px);}
   .qcont h3{text-align:center;font-size:1.12rem;margin-bottom:8px;}
   .progress{height:12px;margin-bottom:12px;}
-  .question{text-align:center;font-size:1.06rem;margin-bottom:12px;padding:0 6px;}
+  .question{text-align:center;font-size:1.2rem;margin-bottom:12px;padding:0 6px;}
   .labels-row{padding:2px 6px;margin:0 0 2px 0;gap:6px;}
   .label-left,.label-right{font-size:1rem;max-width:48%;}
   .slider-row{padding:0 6px 0 6px;margin-top:0;}
@@ -186,5 +186,6 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
   .participant-name{ margin: 12px 14px; padding:10px; border-radius:10px; }
   .pn-input-wrap input{ font-size:0.95rem; }
 }
+
 
 
