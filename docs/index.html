@@ -5,11 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Teste de Mindset</title>
   <link rel="stylesheet" href="styles.css">
-  <!-- html2pdf deve carregar antes do script.js ou com defer -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js" integrity="sha512-MpDFIChbcXl2QgipQrt1VcPHMldRILetapBl5MPCA9Y8r7qvlwx1/Mc9hNTzY+kS5kX6PdoDq41ws1HiVNLdZA==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js" integrity="sha512-MpDFIChbcXl2QgipQrt1VcPHMldRILetapBl5MPCA9Y8r7qvlwx1/Mc9hNTzY+kS5kX6PdoDq41ws1HiVNLdZA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="script.js" defer></script>
 </head>
-
 <body>
   <!-- CAPA / INTRO -->
   <main id="cover" class="cover" aria-hidden="false">
@@ -59,23 +57,18 @@
   </div>
 
   <!-- Painel de resultado -->
-  <div id="resultPanel" class="result-panel" aria-hidden="true" style="display:none;">
-    <div id="resultCard" class="result-card" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
-      <h2 id="resultTitle">Seu resultado</h2>
-      <div id="resultText" class="result-text">Aqui ficará o texto do resultado.</div>
+  <div id="resultPanel" class="result-panel" aria-hidden="true">
+    <div class="result-card" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+      <h2 id="resultTitle"></h2>
+      <div id="resultText" class="result-text"></div>
       <div class="result-meta" id="resultMeta"></div>
 
       <div class="result-actions">
-        <button id="btnSalvarPdf" class="qnav">Salvar em PDF</button>
-        <button id="btnRefazer" class="qnav">Refazer teste</button>
-        <button id="btnFechar" class="qnav">FECHAR</button>
+        <button id="savePdf" class="qnav">Salvar em PDF</button>
+        <button id="retryTest" class="qnav">Refazer teste</button>
+        <button id="closeResult" class="qnav primary">FECHAR</button>
       </div>
     </div>
   </div>
- </body>
+</body>
 </html>
-```
-
-
-
-
