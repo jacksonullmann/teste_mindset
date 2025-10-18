@@ -55,7 +55,7 @@ if (metaEl) {
   if (nomeNode) metaEl.removeChild(nomeNode);
 }
 
-// cria o bloco estilizado
+// cria o bloco estilizado com nome + data
 const nameBox = document.createElement('div');
 nameBox.className = 'pdf-name-box';
 nameBox.style.cssText = `
@@ -70,7 +70,16 @@ nameBox.style.cssText = `
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 `;
 
-nameBox.innerHTML = `<strong style="color:#444;">Nome:</strong> ${name}`;
+// data atual formatada para exibição
+const now = new Date();
+const pad = n => String(n).padStart(2,'0');
+const formattedDate = `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+// conteúdo do box: nome + data
+nameBox.innerHTML = `
+  <div><strong style="color:#444;">Nome:</strong> ${name}</div>
+  <div><strong style="color:#444;">Data:</strong> ${formattedDate}</div>
+`;
 
 // insere o bloco abaixo da pontuação, se existir
 if (metaEl && metaEl.parentNode) {
@@ -84,14 +93,6 @@ if (metaEl && metaEl.parentNode) {
 // preserva legibilidade convertendo acentos para ASCII
 const normalize = s => s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
 const safeName = normalize(name).replace(/[^a-z0-9_\-]/gi, '_').slice(0,50);
-
-// opcional: inserir o nome no clone para que apareça no PDF (sem alterar UI)
-// se preferir NÃO mostrar no PDF, comente as 3 linhas abaixo
-const metaHolder = document.createElement('div');
-metaHolder.className = 'pdf-meta';
-metaHolder.style.cssText = 'font-size:0.9rem;color:#333;margin-bottom:8px;';
-metaHolder.textContent = `Nome: ${name}`;
-clone.insertBefore(metaHolder, clone.firstChild);
 
 // data atual em YYYY-MM-DD_HH-MM-SS para filename
 const now = new Date();
