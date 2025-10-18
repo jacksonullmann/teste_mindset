@@ -72,77 +72,10 @@
       </div>
     </div>
   </div>
-
-  <!-- Script mínimo: ações de salvar, fechar, refazer -->
-  <script>
-  (function(){
-    // Seletores fixos
-    const btnSalvar = document.getElementById('btnSalvarPdf');
-    const btnFechar = document.getElementById('btnFechar');
-    const btnRefazer = document.getElementById('btnRefazer');
-    const resultPanel = document.getElementById('resultPanel');
-    const resultCard = document.getElementById('resultCard');
-
-    // Função para mostrar resultado (exemplo)
-    window.showResult = function(title, text, meta){
-      document.getElementById('resultTitle').textContent = title || 'Seu resultado';
-      document.getElementById('resultText').innerHTML = text || '';
-      document.getElementById('resultMeta').textContent = meta || '';
-      resultPanel.style.display = 'flex';
-      resultPanel.setAttribute('aria-hidden','false');
-      // opcional: focar no diálogo para acessibilidade
-      resultCard.focus && resultCard.focus();
-    };
-
-    // Salvar em PDF (gera PDF do card de resultado)
-    btnSalvar && btnSalvar.addEventListener('click', function(e){
-      e.preventDefault();
-      const element = resultCard; // gera apenas o card, não toda a página
-      const opt = {
-        margin: 10,
-        filename: 'resultado.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-      try {
-        html2pdf().set(opt).from(element).save().catch(err => {
-          console.error('html2pdf error', err);
-          alert('Falha ao gerar PDF no cliente. Tente usar Imprimir → Salvar como PDF.');
-        });
-      } catch (err) {
-        console.error('Erro html2pdf', err);
-        alert('Falha ao gerar PDF. Use Imprimir → Salvar como PDF.');
-      }
-    });
-
-    // Fechar: oculta painel de resultado
-    btnFechar && btnFechar.addEventListener('click', function(e){
-      e.preventDefault();
-      resultPanel.style.display = 'none';
-      resultPanel.setAttribute('aria-hidden','true');
-    });
-
-    // Refazer: recarrega a página / reinicia o teste
-    btnRefazer && btnRefazer.addEventListener('click', function(e){
-      e.preventDefault();
-      // Se preferir reiniciar via JS, substitua por lógica do SPA
-      window.location.href = window.location.pathname;
-    });
-
-    // Exemplo: vincular botão Start para demonstrar o resultado (remova/ajuste conforme sua lógica)
-    const startBtn = document.getElementById('startBtn');
-    if (startBtn) {
-      startBtn.addEventListener('click', function(){
-        // exemplo rápido para mostrar painel de resultado
-        showResult('Teste finalizado', '<p>Parabéns, aqui está um resumo do seu mindset.</p>', 'Pontuação: 78');
-      });
-    }
-  })();
-  </script>
-</body>
+ </body>
 </html>
 ```
+
 
 
 
