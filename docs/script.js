@@ -159,7 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Refazer (reinicia o teste)
   document.getElementById('btnRefazer')?.addEventListener('click', (e) => {
     e.preventDefault();
-    // reiniciar estado: recarrega a página para garantir limpeza simples
     location.reload();
   });
 
@@ -176,10 +175,12 @@ document.addEventListener('DOMContentLoaded', () => {
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
+
     html2pdf().set(opt).from(resultCard).save().catch(() => {
       alert('Falha ao gerar PDF. Use Imprimir → Salvar como PDF.');
     });
   });
 });
-})();
+
+
 
